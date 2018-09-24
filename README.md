@@ -1,4 +1,7 @@
-# Generic infoes
+# C99
+Here you can find some C programming language exercises.
+
+# Generic info
 
 Syntax highlighted code block
 
@@ -15,6 +18,3 @@ Syntax highlighted code block
 **Bold** and _Italic_ and `Code` text
 
 [Link](url) and ![Image](src)
-
-#C99
-Here you can find some C programming language exercises.
