@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_CHAR 50
 #define MAX_DATA 100
@@ -32,8 +33,8 @@ typedef struct Personal_data
 } ps_data;
 
 //dichiarazioni funzioni
-void getFileName (char fname[];
-ps_data* readContent (char* fname, char* format);
+void getFileName (char* fname);
+void readContent (char* fname, ps_data* people, char* format);
 void printContent (ps_data* people);
 
 
@@ -46,7 +47,7 @@ int main (int argc, char** argv)
     //richiedere nome file
     getFileName(nome_file);
     //legge i dati dal file e li salva nelle struct
-    people = readContent(nome_file, "%s\t%s\t%d");
+    readContent(nome_file, people, "%s\t%s\t%d");
     //stampa i risultati
     printContent(people);
 
@@ -58,11 +59,13 @@ void getFileName (char* fname)
 {
     int check;
     printf("Inserisci il nome del file da leggere ");
-    printf("(senza spazi e max %d caratteri):\n", MAX_CHAR);
+    printf("- senza spazi\n");
+    printf("- max %d caratteri\n", MAX_CHAR);
+    printf("- ordine: NOME tabulazione COGNOME tabulazione ETA' invio\n");
     do
     {
-        printf("-->\t");
-        scanf("%s", fname);
+        printf("--> ");
+        check = scanf("%s", fname);
         if(check == 0 || check == EOF)
             printf("Input non valido!\nRe-Inserisci il nome del file:\n");
     } while(check == 0 || check == EOF);
@@ -70,15 +73,14 @@ void getFileName (char* fname)
 
 //funzione che dato il nome del file ne estrapola i dati
 //formattati secondo istruzioni date da consegna
-ps_data* readContent (char* fname, char* format)
+void readContent (char* fname, ps_data* people, char* format)
 {
     FILE *fp;
-    ps_data people[MAX_DATA];
     char c;
     int i, check;
 
 	//apre il file in sola lettura
-	if ((fp = fopen(NOME_FILE, "r")) == NULL)
+	if ((fp = fopen(fname, "r")) == NULL)
 	{
 		printf("Impossibile leggere il file!\nChiusura programma...\n");
 		exit(1);
@@ -92,23 +94,20 @@ ps_data* readContent (char* fname, char* format)
                        people[i].nome, people[i].cognome, &people[i].eta);
     } while(check != EOF && i < MAX_DATA);
 	fclose(fp);
-
-    return people;
 }
 
 //funzione che stampa il contenuto della struct
 void printContent (ps_data* people)
 {
-    bool check;
-    int i;
+    int i, check;
 
-    check = true;
+    check = 1;
     for(i = 0; i < MAX_DATA && check; i++)
     {
-        if(isEmpty(people[i].nome) && isEmpty(people[i].cognome))
-            check = false;
+        if(strlen(people[i].nome) < 1 && strlen(people[i].cognome) < 1)
+            check = 0;
         if(check)
-            printf("%s %s %d`n", \
+            printf("%s %s %d\n", \
                    people[i].nome, people[i].cognome, people[i].eta);
     }
 }
