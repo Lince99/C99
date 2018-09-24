@@ -1,6 +1,6 @@
 /**
  * Merge multiprocessing in c
- * Tomas  Fornasa
+ * Created by Oples (with wikipedia help)
  * 22/10/2017
  */
 
