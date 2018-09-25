@@ -36,6 +36,9 @@ typedef struct Personal_data
 void getFileName (char* fname);
 void readContent (char* fname, ps_data* people, char* format);
 void printContent (ps_data* people);
+void writeContent (char* fname, ps_data* people, char* format);
+void orderContent (ps_data* people);
+
 
 
 int main (int argc, char** argv)
@@ -50,6 +53,13 @@ int main (int argc, char** argv)
     readContent(nome_file, people, "%s\t%s\t%d");
     //stampa i risultati
     printContent(people);
+	//esegue l'ordinamento alfabetico
+    orderContent(people);
+    //e lo stampa
+    printf("Array ordinata alfabeticamente:\n");
+    printContent(people);
+    //infine lo scrive su file la struttura aggiornata
+    writeContent("ordered.txt", people, "%s\t%s\t%d");
 
     return 0;
 }
@@ -75,39 +85,78 @@ void getFileName (char* fname)
 //formattati secondo istruzioni date da consegna
 void readContent (char* fname, ps_data* people, char* format)
 {
-    FILE *fp;
+    FILE* fp;
     char c;
     int i, check;
 
 	//apre il file in sola lettura
-	if ((fp = fopen(fname, "r")) == NULL)
+	if((fp = fopen(fname, "r")) == NULL)
 	{
 		printf("Impossibile leggere il file!\nChiusura programma...\n");
 		exit(1);
 	}
 	//e aggiunge i dati alla struct con la formattazione data
-    //fino al massimo definito in MAX_DATA se necessario
-    i, check = 0;
-    do
-    {
-        check = fscanf(fp, format, \
-                       people[i].nome, people[i].cognome, &people[i].eta);
-    } while(check != EOF && i < MAX_DATA);
-	fclose(fp);
+  //fino al massimo definito in MAX_DATA se necessario
+  i, check = 0;
+  do
+  {
+      check = fscanf(fp, format,
+                     people[i].cognome, people[i].nome, &people[i].eta);
+  } while(check != EOF && i < MAX_DATA);
+  fclose(fp);
 }
 
 //funzione che stampa il contenuto della struct
 void printContent (ps_data* people)
 {
-    int i, check;
-
-    check = 1;
-    for(i = 0; i < MAX_DATA && check; i++)
+    int i;
+    for(i = 0; i < MAX_DATA; i++)
     {
-        if(strlen(people[i].nome) < 1 && strlen(people[i].cognome) < 1)
-            check = 0;
-        if(check)
-            printf("%s %s %d\n", \
-                   people[i].nome, people[i].cognome, people[i].eta);
+        printf("%s %s %d\n",
+               people[i].nome, people[i].cognome, people[i].eta);
+    }
+}
+
+//funzione che scrive su file l'array di strutture seguendo format
+void writeContent (char* fname, ps_data* people, char* format)
+{
+	FILE* fp;
+	int i;
+
+	if((fp = fopen(fname, "w+")) == NULL)
+	{
+		printf("Imposssibile scrivere sul file!\nChiusura programma...\n");
+		exit(1);
+	}
+    //scrive sul file fino alla costante che fa da limite
+    for(i = 0; i < MAX_DATA; i++)
+	   fprintf(fp, format, people[i].cognome, people[i].nome, people[i].eta);
+	fclose(fp);
+}
+
+//funzione principale del programma:
+//ordina alfabeticamente l'array di persone, e moltiplica x 2 l'eta'
+void orderContent (ps_data* people)
+{
+    int i, j;
+    char* conc0, conc1;
+    ps_data tmpPers;
+
+    //selection sort
+    for(i = 0; i < MAX_DATA; i++)
+    {
+        for(j = 1; j < MAX_DATA; j++)
+        {
+            //TODO HERE
+            strcat(conc0, people[i].cognome people[i].nome);
+            strcat(conc1, people[j].cognome people[j].nome);
+            //scambia la prima se e' maggiore della seconda
+            if(strcmp(conc0, conc1) > 0)
+            {
+                tmpPers = people[i];
+                people[i] = people[j];
+                people[j] = tmpPers;
+            }
+        }
     }
 }
