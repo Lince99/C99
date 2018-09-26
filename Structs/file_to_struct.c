@@ -27,12 +27,13 @@
 //struttura che contiene i dati di una persona
 typedef struct Personal_data
 {
-    char nome [MAX_CHAR];
     char cognome [MAX_CHAR];
+    char nome [MAX_CHAR];
     unsigned int eta;
 } ps_data;
 
 //dichiarazioni funzioni
+void initialize (ps_data* people);
 void getFileName (char* fname);
 void readContent (char* fname, ps_data* people, char* format);
 void printContent (ps_data* people);
@@ -46,29 +47,49 @@ int main (int argc, char** argv)
     FILE* fp; //file puntatore
     ps_data people[MAX_DATA];
     char nome_file[MAX_CHAR];
+    char nome_file_out[MAX_CHAR];
 
-    //richiedere nome file
+    //inizializza l'array di persone
+    initialize(people);
+    //legge i dati dal file richiesto e li salva nelle struct
     getFileName(nome_file);
-    //legge i dati dal file e li salva nelle struct
-    readContent(nome_file, people, "%s\t%s\t%d");
+    readContent(nome_file, people, "%s\t%s\t%d\n");
     //stampa i risultati
     printContent(people);
+
 	//esegue l'ordinamento alfabetico
     orderContent(people);
     //e lo stampa
     printf("Array ordinata alfabeticamente:\n");
     printContent(people);
+
     //infine lo scrive su file la struttura aggiornata
-    writeContent("ordered.txt", people, "%s\t%s\t%d");
+    getFileName(nome_file_out);
+    writeContent(nome_file_out, people, "%s\t%s\t%d\n");
 
     return 0;
+}
+
+
+
+//funzione che inizializza tutto a 0 l'array di persone
+void initialize (ps_data* people)
+{
+    int i, j;
+
+    for(i = 0; i < MAX_DATA; i++)
+    {
+        strcpy(people[i].cognome, "");
+        strcpy(people[i].nome, "");
+        people[i].eta = 0;
+    }
 }
 
 //funzione che legge in input il nome del file e lo controlla
 void getFileName (char* fname)
 {
     int check;
-    printf("Inserisci il nome del file da leggere ");
+    printf("Inserisci il nome del file\n");
     printf("- senza spazi\n");
     printf("- max %d caratteri\n", MAX_CHAR);
     printf("- ordine: NOME tabulazione COGNOME tabulazione ETA' invio\n");
@@ -96,14 +117,17 @@ void readContent (char* fname, ps_data* people, char* format)
 		exit(1);
 	}
 	//e aggiunge i dati alla struct con la formattazione data
-  //fino al massimo definito in MAX_DATA se necessario
-  i, check = 0;
-  do
-  {
-      check = fscanf(fp, format,
-                     people[i].cognome, people[i].nome, &people[i].eta);
-  } while(check != EOF && i < MAX_DATA);
-  fclose(fp);
+    //fino al massimo definito in MAX_DATA se necessario
+    i, check = 0;
+    do
+    {
+        check = fscanf(fp, format,
+                       people[i].cognome, people[i].nome, &people[i].eta);
+        /*printf("read:\n\tnome: %s\tcognome: %s\teta: %d\n",
+               people[i].cognome, people[i].nome, people[i].eta);*/
+        i++;
+    } while(check != EOF);
+    fclose(fp);
 }
 
 //funzione che stampa il contenuto della struct
@@ -112,12 +136,13 @@ void printContent (ps_data* people)
     int i;
     for(i = 0; i < MAX_DATA; i++)
     {
-        printf("%s %s %d\n",
-               people[i].nome, people[i].cognome, people[i].eta);
+        if(people[i].eta != 0)
+            printf("%s %s %d\n", people[i].cognome,
+                   people[i].nome, people[i].eta);
     }
 }
 
-//funzione che scrive su file l'array di strutture seguendo format
+//funzione che scrive su file l'array di strutture seguendo il format dato
 void writeContent (char* fname, ps_data* people, char* format)
 {
 	FILE* fp;
@@ -130,7 +155,11 @@ void writeContent (char* fname, ps_data* people, char* format)
 	}
     //scrive sul file fino alla costante che fa da limite
     for(i = 0; i < MAX_DATA; i++)
-	   fprintf(fp, format, people[i].cognome, people[i].nome, people[i].eta);
+    {
+        if(people[i].eta != 0)
+            fprintf(fp, format, people[i].cognome,
+                    people[i].nome, people[i].eta);
+    }
 	fclose(fp);
 }
 
@@ -139,23 +168,27 @@ void writeContent (char* fname, ps_data* people, char* format)
 void orderContent (ps_data* people)
 {
     int i, j;
-    char* conc0, conc1;
+    char conc0[MAX_CHAR*2];
+    char conc1[MAX_CHAR*2];
     ps_data tmpPers;
 
-    //selection sort
+    //bubblesort
     for(i = 0; i < MAX_DATA; i++)
     {
-        for(j = 1; j < MAX_DATA; j++)
+        for(j = 0; j < (MAX_DATA-i-1); j++)
         {
-            //TODO HERE
-            strcat(conc0, people[i].cognome people[i].nome);
-            strcat(conc1, people[j].cognome people[j].nome);
-            //scambia la prima se e' maggiore della seconda
+            //unisce cognome e nome in una sola stringa per facilitare
+            //il confronto tra le due stringhe
+            strcpy(conc0, people[j].cognome);
+            strcat(conc0, people[j].nome);
+            strcpy(conc1, people[j+1].cognome);
+            strcat(conc1, people[j+1].nome);
+            //se il successivo e' maggiore del secondo li scambia
             if(strcmp(conc0, conc1) > 0)
             {
-                tmpPers = people[i];
-                people[i] = people[j];
-                people[j] = tmpPers;
+                tmpPers = people[j];
+                people[j] = people[j+1];
+                people[j+1] = tmpPers;
             }
         }
     }

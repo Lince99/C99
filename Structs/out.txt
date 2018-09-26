@@ -1,8 +1,8 @@
+a	B	2
 a	a	1
+a	b	2
+bb	a	2
 b	z	2
 c	b	3
 d	a	4
 e	A	5
-a   b   2
-a   B   2
-bb  a   2
