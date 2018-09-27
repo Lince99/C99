@@ -1,8 +1,8 @@
-a	B	2
-a	a	1
-a	b	2
-bb	a	2
-b	z	2
-c	b	3
-d	a	4
+a	B	16
+a	a	1024
+a	b	64
+bb	a	512
+b	z	16384
+c	b	96
+d	a	8
 e	A	5

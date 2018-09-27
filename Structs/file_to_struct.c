@@ -40,7 +40,8 @@ void printContent (ps_data* people);
 void writeContent (char* fname, ps_data* people, char* format);
 void orderContent (ps_data* people);
 
-
+//dichiarazioni variabili globali
+int newDim; //variabile che conterra' la dimensione del totale dei dati letti
 
 int main (int argc, char** argv)
 {
@@ -48,6 +49,7 @@ int main (int argc, char** argv)
     ps_data people[MAX_DATA];
     char nome_file[MAX_CHAR];
     char nome_file_out[MAX_CHAR];
+    int newDim;
 
     //inizializza l'array di persone
     initialize(people);
@@ -127,6 +129,8 @@ void readContent (char* fname, ps_data* people, char* format)
                people[i].cognome, people[i].nome, people[i].eta);*/
         i++;
     } while(check != EOF);
+    newDim = i;
+    printf("dimensione = %d\n", i);
     fclose(fp);
 }
 
@@ -134,7 +138,7 @@ void readContent (char* fname, ps_data* people, char* format)
 void printContent (ps_data* people)
 {
     int i;
-    for(i = 0; i < MAX_DATA; i++)
+    for(i = 0; i < newDim; i++)
     {
         if(people[i].eta != 0)
             printf("%s %s %d\n", people[i].cognome,
@@ -154,7 +158,7 @@ void writeContent (char* fname, ps_data* people, char* format)
 		exit(1);
 	}
     //scrive sul file fino alla costante che fa da limite
-    for(i = 0; i < MAX_DATA; i++)
+    for(i = 0; i < newDim; i++)
     {
         if(people[i].eta != 0)
             fprintf(fp, format, people[i].cognome,
@@ -173,9 +177,11 @@ void orderContent (ps_data* people)
     ps_data tmpPers;
 
     //bubblesort
-    for(i = 0; i < MAX_DATA; i++)
+    for(i = 0; i < newDim; i++)
     {
-        for(j = 0; j < (MAX_DATA-i-1); j++)
+        //moltiplica per 2 l'eta'
+        people[i].eta *= 2;
+        for(j = 0; j < (newDim-i-1); j++)
         {
             //unisce cognome e nome in una sola stringa per facilitare
             //il confronto tra le due stringhe

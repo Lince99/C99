@@ -6,3 +6,4 @@ e	A	5
 a   b   2
 a   B   2
 bb  a   2
+a ab	b	2
