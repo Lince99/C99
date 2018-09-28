@@ -53,7 +53,6 @@ int main (int argc, char** argv)
     char* format;
     int newDim;
 
-
     //inizializza l'array di persone
     initialize(people);
     newDim = 0;
@@ -137,7 +136,8 @@ void readContent (char* fname, ps_data* people, char* format)
         check = fscanf(fp, format,
                        people[i].cognome, people[i].nome, &people[i].eta);
         i++;
-    } while(check != EOF);
+      //ci devono essere 3 dati nel file e non essere piu' del limite
+    } while(check != EOF && i < MAX_DATA && check == 3);
     newDim = i;
     //printf("dimensione = %d\n", i);
     fclose(fp);
@@ -199,7 +199,7 @@ void orderContent (ps_data* people)
             strcpy(conc1, people[j+1].cognome);
             strcat(conc1, people[j+1].nome);
             //se il successivo e' maggiore del secondo li scambia
-            if(strcmp(conc0, conc1) > 0)
+            if(strcasecmp(conc0, conc1) > 0)
             {
                 tmpPers = people[j];
                 people[j] = people[j+1];
