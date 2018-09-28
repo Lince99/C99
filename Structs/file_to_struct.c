@@ -43,6 +43,7 @@ void orderContent (ps_data* people);
 
 //dichiarazioni variabili globali
 int newDim; //variabile che conterra' la dimensione del totale dei dati letti
+int debugFlag; //variabile per la visualizzazione 
 
 int main (int argc, char** argv)
 {
@@ -51,17 +52,30 @@ int main (int argc, char** argv)
     char nome_file[MAX_CHAR];
     char nome_file_out[MAX_CHAR];
     char* format;
-    int newDim;
+    int i;
+
+    //gestione dei parametri da CLI
+    /*
+    if(argc > 0)
+    {
+        for(i = 0; i < argc, i++)
+        {
+            switch(argv[i])
+            {
+                case "-f":
+                case "-d":
+            }
+        }
+    }*/
 
     //inizializza l'array di persone
     initialize(people);
     newDim = 0;
-    //--MODIFICARE QUESTO NEL CASO IL FILE ABBIA UN FORMATO DIVERSO--
     format = "%s\t%s\t%d\n"; //formato di lettura dei dati dal file
 
     //legge i dati dal file richiesto e li salva nelle struct
     getFileName(nome_file, 1);
-    readContent(nome_file, people, "%s\t%s\t%d\n");
+    readContent(nome_file, people, format);
     //stampa i risultati
     printContent(people);
 
@@ -73,7 +87,7 @@ int main (int argc, char** argv)
 
     //infine lo scrive su file la struttura aggiornata
     getFileName(nome_file_out, 0);
-    writeContent(nome_file_out, people, "%s\t%s\t%d\n");
+    writeContent(nome_file_out, people, format);
 
     return 0;
 }
