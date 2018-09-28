@@ -49,10 +49,16 @@ int main (int argc, char** argv)
     ps_data people[MAX_DATA];
     char nome_file[MAX_CHAR];
     char nome_file_out[MAX_CHAR];
+    char* format;
     int newDim;
+
 
     //inizializza l'array di persone
     initialize(people);
+    newDim = 0;
+    //--MODIFICARE QUESTO NEL CASO IL FILE ABBIA UN FORMATO DIVERSO--
+    format = "%s\t%s\t%d\n"; //formato di lettura dei dati dal file
+
     //legge i dati dal file richiesto e li salva nelle struct
     getFileName(nome_file);
     readContent(nome_file, people, "%s\t%s\t%d\n");
@@ -92,7 +98,7 @@ void getFileName (char* fname)
 {
     int check;
     printf("Inserisci il nome del file\n");
-    printf("- senza spazi\n");
+    printf("- gli spazi verranno ignorati\n");
     printf("- max %d caratteri\n", MAX_CHAR);
     printf("- ordine: NOME tabulazione COGNOME tabulazione ETA' invio\n");
     do
@@ -125,12 +131,10 @@ void readContent (char* fname, ps_data* people, char* format)
     {
         check = fscanf(fp, format,
                        people[i].cognome, people[i].nome, &people[i].eta);
-        /*printf("read:\n\tnome: %s\tcognome: %s\teta: %d\n",
-               people[i].cognome, people[i].nome, people[i].eta);*/
         i++;
     } while(check != EOF);
     newDim = i;
-    printf("dimensione = %d\n", i);
+    //printf("dimensione = %d\n", i);
     fclose(fp);
 }
 
