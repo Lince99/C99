@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "colors.h"
 
 #define MAX_CHAR 50
 #define MAX_DATA 100
@@ -34,7 +35,7 @@ typedef struct Personal_data
 
 //dichiarazioni funzioni
 void initialize (ps_data* people);
-void getFileName (char* fname);
+void getFileName (char* fname, int init);
 void readContent (char* fname, ps_data* people, char* format);
 void printContent (ps_data* people);
 void writeContent (char* fname, ps_data* people, char* format);
@@ -60,7 +61,7 @@ int main (int argc, char** argv)
     format = "%s\t%s\t%d\n"; //formato di lettura dei dati dal file
 
     //legge i dati dal file richiesto e li salva nelle struct
-    getFileName(nome_file);
+    getFileName(nome_file, 1);
     readContent(nome_file, people, "%s\t%s\t%d\n");
     //stampa i risultati
     printContent(people);
@@ -68,11 +69,11 @@ int main (int argc, char** argv)
 	//esegue l'ordinamento alfabetico
     orderContent(people);
     //e lo stampa
-    printf("Array ordinata alfabeticamente:\n");
+    printf(ANSI_COLOR_GREEN "Array ordinata alfabeticamente:\n" ANSI_COLOR_RESET);
     printContent(people);
 
     //infine lo scrive su file la struttura aggiornata
-    getFileName(nome_file_out);
+    getFileName(nome_file_out, 0);
     writeContent(nome_file_out, people, "%s\t%s\t%d\n");
 
     return 0;
@@ -83,7 +84,7 @@ int main (int argc, char** argv)
 //funzione che inizializza tutto a 0 l'array di persone
 void initialize (ps_data* people)
 {
-    int i, j;
+    int i;
 
     for(i = 0; i < MAX_DATA; i++)
     {
@@ -94,19 +95,23 @@ void initialize (ps_data* people)
 }
 
 //funzione che legge in input il nome del file e lo controlla
-void getFileName (char* fname)
+//init e' un flag di controllo per stampare le condizioni di lettura
+void getFileName (char* fname, int init)
 {
     int check;
-    printf("Inserisci il nome del file\n");
-    printf("- gli spazi verranno ignorati\n");
-    printf("- max %d caratteri\n", MAX_CHAR);
-    printf("- ordine: NOME tabulazione COGNOME tabulazione ETA' invio\n");
+    printf("Inserisci il nome del file:\n");
+    if(init)
+    {
+        printf(ANSI_COLOR_YELLOW "- gli spazi verranno ignorati\n");
+        printf("- max %d caratteri\n", MAX_CHAR);
+        printf("- ordine: NOME tabulazione COGNOME tabulazione ETA' invio\n" ANSI_COLOR_RESET);
+    }
     do
     {
-        printf("--> ");
+        printf(ANSI_COLOR_GREEN "--> " ANSI_COLOR_RESET);
         check = scanf("%s", fname);
         if(check == 0 || check == EOF)
-            printf("Input non valido!\nRe-Inserisci il nome del file:\n");
+            printf(ANSI_COLOR_RED "Input non valido!\nRe-Inserisci il nome del file:\n" ANSI_COLOR_RESET);
     } while(check == 0 || check == EOF);
 }
 
@@ -121,7 +126,7 @@ void readContent (char* fname, ps_data* people, char* format)
 	//apre il file in sola lettura
 	if((fp = fopen(fname, "r")) == NULL)
 	{
-		printf("Impossibile leggere il file!\nChiusura programma...\n");
+		printf(ANSI_COLOR_RED "Impossibile leggere il file!\nChiusura programma...\n" ANSI_COLOR_RESET);
 		exit(1);
 	}
 	//e aggiunge i dati alla struct con la formattazione data
@@ -158,7 +163,7 @@ void writeContent (char* fname, ps_data* people, char* format)
 
 	if((fp = fopen(fname, "w+")) == NULL)
 	{
-		printf("Imposssibile scrivere sul file!\nChiusura programma...\n");
+		printf(ANSI_COLOR_RED "Imposssibile scrivere sul file!\nChiusura programma...\n" ANSI_COLOR_RESET);
 		exit(1);
 	}
     //scrive sul file fino alla costante che fa da limite
