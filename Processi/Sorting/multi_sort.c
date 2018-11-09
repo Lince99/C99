@@ -17,6 +17,8 @@ Riflettere sulla consegna stessa..
 
 #include <stdio.h>
 #include "manager_array.h"
+#include "manager_process.h"
+#include "colors.h"
 
 void testArray();
 
