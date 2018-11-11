@@ -1,0 +1,5 @@
+Bartolomeo	Santis	40
+Billed	Gim	20
+Borta	Marta	48
+Rassi	Mario	42
+Rossi	Mario	80

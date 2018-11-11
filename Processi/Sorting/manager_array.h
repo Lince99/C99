@@ -128,7 +128,7 @@ int* selectionSort(int* arr, int dim) {
         *(arr+minInd) = *(arr+i);
         *(arr+i) = min;
     }
-    
+
     return arr;
 }
 
@@ -147,7 +147,7 @@ int* insertionSort(int* arr, int dim) {
         }
         *(arr+j+1) = tmp;
     }
-    
+
     return arr;
 }
 
@@ -178,7 +178,7 @@ int* searchElem(int* arr, int start, int end, int x) {
 	int* found = NULL; //array di elementi trovati
 	int dimFound = 0;
 	int i = 0;
-	
+
 	if(end > start) {
 		//scorre l'array dal punto iniziale a quello finale indicati
 		//POTREBBE DARE SEGMENTATION FAULT! TODO risolvere
@@ -192,7 +192,7 @@ int* searchElem(int* arr, int start, int end, int x) {
 	}
 
 	addElemStart(&found, dimFound, dimFound);
-	
+
 	return found;
 }*/
 
@@ -202,7 +202,7 @@ int* searchElem(int* arr, int start, int end, int x) {
  */
 int searchElem(int* arr, int start, int end, int x) {
 	int i = 0;
-	
+
 	if(end > start) {
 		//scorre l'array dal punto iniziale a quello finale indicati
 		//POTREBBE DARE SEGMENTATION FAULT! TODO risolvere
@@ -212,7 +212,7 @@ int searchElem(int* arr, int start, int end, int x) {
 			}
 		}
 	}
-	
+
 	//se non trova nulla ritorna l'indice -1
 	return -1;
 }

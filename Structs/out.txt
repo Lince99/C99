@@ -1,8 +1,0 @@
-a	a	2
-a	b	2
-a	B	4
-bb	a	2
-b	z	8
-c	b	12
-d	a	8
-e	A	10
