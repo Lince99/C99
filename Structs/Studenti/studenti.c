@@ -36,7 +36,7 @@ typedef struct STUDENTI {
 int compileStud(studenti* studs, int dim, int pos);
 int compileAllStud(studenti* studs, int dim);
 void printPosStud(studenti* studs, int dim, int pos);
-int isEmptyStud(studenti* studs, int dim, int pos);
+int isEmptyStud(studenti* studs, int pos);
 void getInt(int* x);
 void getLimitInt(int* x, int min, int max);
 void getString(char* str);
@@ -86,8 +86,9 @@ int main(int argc, char** argv) {
                 getInt(&pos);
                 //inserimento dei dati dei singoli studenti
                 if(pos == 1) {
-                    printf("Inserisci la posizione in cui si vuole "
-                           "inserire i dati:\n");
+                    printf(ANSI_GREEN "Inserisci la posizione in cui si vuole "
+                           "inserire i dati:\n"
+                           ANSI_RESET);
                     getLimitInt(&pos, 0, n-1);
                     if(compileStud(studs, n, pos))
                         printf(ANSI_RED "Nessuna modifica apportata..."
@@ -135,7 +136,7 @@ int compileStud(studenti* studs, int dim, int pos) {
     int flag = 0;
 
     //se ci sono dei dati li stampa
-    if(!isEmptyStud(studs, dim, pos)) {
+    if(!isEmptyStud(studs, pos)) {
         printf(ANSI_RED "Elementi presenti in posizione %d\n" ANSI_RESET, pos);
         printPosStud(studs, dim, pos);
         //e chiede all'utente se e' sicuro di sovrascriverli
@@ -176,6 +177,7 @@ int compileAllStud(studenti* studs, int dim) {
     int pos = 0;
 
     for(pos = 0; pos < dim; pos++) {
+        printf(ANSI_MAGENTA "n* %d\n" ANSI_RESET, pos);
         if(compileStud(studs, dim, pos))
             count++;
     }
@@ -192,14 +194,14 @@ int compileAllStud(studenti* studs, int dim) {
  */
 void printPosStud(studenti* studs, int dim, int pos) {
 
-    printf(ANSI_MAGENTA "Studente numero %d\n", pos);
+    printf(ANSI_MAGENTA "Studente n* %d\n", pos);
     //se non ci sono dati avvisa l'utente
-    if(isEmptyStud(studs, dim, pos))
-        printf(ANSI_RED "Nessun dato...\n" ANSI_RESET);
+    if(isEmptyStud(studs, pos))
+        printf(ANSI_RED "\tNessun dato...\n" ANSI_RESET);
     else
-        printf("%s %s, frequenta il corso %d, iscritto/a da %d anni, \n"
+        printf("\t%s %s, frequenta il corso %d, iscritto/a da %d anni, \n"
                "Ha una media di voti pari a %d.\n" ANSI_RESET,
-               *(studs[pos].cognome), *(studs[pos].nome),
+               studs[pos].cognome, studs[pos].nome,
                studs[pos].corso, studs[pos].anni_iscrizione,
                studs[pos].voto);
 
@@ -208,22 +210,21 @@ void printPosStud(studenti* studs, int dim, int pos) {
 /*
  * funzione di controllo se un elemento nell'array contiene dei dati
  * params: puntatore all'array di studenti
- *         dimensione dell'array
  *         posizione in cui andare a leggere
  * return: un intero che vale 1 in caso di elemento vuoto
  *         e 0 in caso di presenza di almeno 1 dato
  */
-int isEmptyStud(studenti* studs, int dim, int pos) {
+int isEmptyStud(studenti* studs, int pos) {
 
-    if(!studs[pos].cognome)
+    if(studs[pos].cognome != NULL)
         return 0;
-    else if(!studs[pos].nome)
+    else if(studs[pos].nome != NULL)
         return 0;
-    else if(!studs[pos].corso)
+    else if(studs[pos].corso != 0)
         return 0;
-    else if(!studs[pos].voto)
+    else if(studs[pos].voto != 0)
         return 0;
-    else if(!studs[pos].anni_iscrizione)
+    else if(studs[pos].anni_iscrizione != 0)
         return 0;
 
     return 1;
@@ -281,7 +282,6 @@ void getString(char* str) {
     do {
         printf(ANSI_RESET "-->\t");
         str = fgets(str, MAX_CHAR, stdin);
-
         if(str == NULL)
             printf(ANSI_RED
                    "Stringa non valida! Re-inseriscila\n"
