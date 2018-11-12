@@ -16,6 +16,7 @@
  */
 
 #include <stdio.h>
+#include <malloc.h>
 #include <stdlib.h>
 #include <limits.h>
 #include "colors.h"
@@ -51,6 +52,11 @@ int main(int argc, char** argv) {
     int scelta = 0;
     int pos = 0;
     studenti* studs = NULL;
+
+	//DEBUG malloc_info(0, stdout);
+	char* stringa = NULL;
+	getString(stringa);
+	printf("%s\n", stringa);
 
     //presentazione
     printf(ANSI_BLUE
@@ -109,7 +115,7 @@ int main(int argc, char** argv) {
             case 3:
                 break;
             //ricerca studenti migliori
-            //e stampa totale degli studenti meritevoli
+            //e stampa totale degli studenti meritevoli (buona media pochi anni)
             case 4:
                 break;
             //nel caso l'utente inserisce 0 o altro esce
@@ -149,19 +155,19 @@ int compileStud(studenti* studs, int dim, int pos) {
     //chiede all'utente tutti i dati dello studente
     //cognome
     printf(ANSI_GREEN "Cognome: " ANSI_RESET);
-    getString(((studs+pos)->cognome));
+    //getString(studs[pos]->cognome);
     //nome
     printf(ANSI_GREEN "Nome: " ANSI_RESET);
-    getString(((studs+pos)->nome));
+    //getString(studs[pos]->nome);
     //corso
-    printf(ANSI_GREEN "Corso attuale: " ANSI_RESET);
-    getLimitInt(&((studs+pos)->corso), 1900, 2100);
+    printf(ANSI_GREEN "Anno di corso attuale: " ANSI_RESET);
+    getLimitInt(&((studs+pos)->corso), 0, 5);
     //voto
     printf(ANSI_GREEN "Voto: " ANSI_RESET);
     getLimitInt(&((studs+pos)->voto), 0, 10);
     //anni_iscrizione
-    printf(ANSI_GREEN "Anni di iscrizione: " ANSI_RESET);
-    getLimitInt(&((studs+pos)->corso), 0, 30);
+    printf(ANSI_GREEN "Numero di anni di iscrizione: " ANSI_RESET);
+    getLimitInt(&((studs+pos)->corso), 0, 20);
 
     return 1;
 }
@@ -281,7 +287,9 @@ void getString(char* str) {
     //controlla che riceva un input valido (accetta spazi)
     do {
         printf(ANSI_RESET "-->\t");
-        str = fgets(str, MAX_CHAR, stdin);
+        //str = fgets(str, MAX_CHAR, stdin);
+		scanf(" %s", str);
+		printf("stringa = %s\n", str);
         if(str == NULL)
             printf(ANSI_RED
                    "Stringa non valida! Re-inseriscila\n"
@@ -299,13 +307,22 @@ void getString(char* str) {
 
 studenti* newArr(int dim) {
     studenti* st = NULL;
+	int i = 0;
 
-    if(!(st = (studenti*)calloc(dim, sizeof(studenti)))) {
+    if(! (st = (studenti*) malloc(sizeof(studenti)*dim)) ) {
         printf(ANSI_RED
                "Impossibile allocare l'array di studenti!\n"
                ANSI_RESET);
         return NULL;
     }
+	//e inizializza tutto a 0
+	for(i = 0; i < dim; i++) {
+		st[i].cognome = NULL;
+		st[i].nome = NULL;
+		st[i].corso = 0;
+		st[i].voto = 0;
+		st[i].anni_iscrizione = 0;
+	}
 
     return st;
 }
