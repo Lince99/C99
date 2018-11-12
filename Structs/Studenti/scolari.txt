@@ -1,0 +1,2 @@
+abba	gigi	1	6	1
+zozo	cucullo	2	4	3

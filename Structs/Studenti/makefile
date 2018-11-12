@@ -10,8 +10,8 @@ compile:
 	$(CC) -o $(EXC) $(SRC)
 
 clean:
-	#reset
-	#ls -la --color
+	reset
+	ls -la --color
 	$(RM) $(EXC)
 
 run:

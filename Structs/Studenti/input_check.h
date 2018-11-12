@@ -2,9 +2,16 @@
  * Basso Nicola
  * 4^AI
  */
+/*
+ * libreria contenente funzioni di input formattati e controllati
+ */
 
- //massimo numero di caratteri per i nomi e cognomi
- #define MAX_CHAR 50
+#include <string.h>
+
+//massimo numero di caratteri per i nomi e cognomi
+#define MAX_CHAR 50
+
+
 
 /*
  * funzione di controllo dell'input di un intero solo positivo
@@ -49,26 +56,32 @@ void getLimitInt(int* x, int min, int max) {
 
 /*
  * funzione che riceve una stringa dall'utente e la controlla
- * params: puntatore alla variabile dove salvare l'input
+ * params: puntatore al puntatore della stringa dove salvare l'input
  * return: void
  */
-void getString(char* str) {
+void getString(char** str) {
+    int lung = 0;
 
-    if( !(str = (char*) malloc(sizeof(char)*MAX_CHAR)) ) {
+    if( !(*str = (char*) malloc(sizeof(char)*MAX_CHAR)) ) {
         printf(ANSI_RED
                "Impossibile allocare l'array di studenti!\n"
                ANSI_RESET);
-        str = NULL;
+        *str = NULL;
         return;
     }
     //controlla che riceva un input valido (accetta spazi)
     do {
-        printf(ANSI_RESET "-->\t");
-        str = fgets(str, MAX_CHAR, stdin);
-        if(str == NULL)
+        printf(ANSI_RESET " -->\t");
+        *str = fgets(*str, MAX_CHAR, stdin);
+        lung = strlen(*str);
+        //pulisce l'invio finale
+        if (lung && (*(*str+lung-1) == '\n'))
+            *(*str+lung-1) = '\0';
+        //e richiede l'input nel caso la stringa non sia valida
+        if(*str == NULL || !lung)
             printf(ANSI_RED
                    "Stringa non valida! Re-inseriscila\n"
                    ANSI_RESET);
-    } while(str == NULL);
+    } while(*str == NULL || !lung);
 
 }
