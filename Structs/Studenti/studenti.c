@@ -16,13 +16,10 @@
  */
 
 #include <stdio.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <limits.h>
 #include "colors.h"
-
-//massimo numero di caratteri per i nomi e cognomi
-#define MAX_CHAR 50
+#include "input_check.h"
 
 //tipo di dato "studenti" con i dati base richiesti dal programma
 typedef struct STUDENTI {
@@ -38,10 +35,7 @@ int compileStud(studenti* studs, int dim, int pos);
 int compileAllStud(studenti* studs, int dim);
 void printPosStud(studenti* studs, int dim, int pos);
 int isEmptyStud(studenti* studs, int pos);
-void getInt(int* x);
-void getLimitInt(int* x, int min, int max);
-void getString(char* str);
-studenti* newArr(int dim);
+studenti* newStudArr(int dim);
 
 
 
@@ -53,11 +47,6 @@ int main(int argc, char** argv) {
     int pos = 0;
     studenti* studs = NULL;
 
-	//DEBUG malloc_info(0, stdout);
-	char* stringa = NULL;
-	getString(stringa);
-	printf("%s\n", stringa);
-
     //presentazione
     printf(ANSI_BLUE
            "\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
@@ -67,7 +56,7 @@ int main(int argc, char** argv) {
 	//richiesta di quanti studenti si vogliono creare
     printf(ANSI_GREEN "Quanti studenti vuoi inserire?\n" ANSI_RESET);
     getLimitInt(&n, 0, INT_MAX);
-    studs = newArr(n);
+    studs = newStudArr(n);
     //stampa del menu di gestione degli studenti
     do {
         printf(ANSI_GREEN "\nCosa vuoi fare?\n"
@@ -96,7 +85,7 @@ int main(int argc, char** argv) {
                            "inserire i dati:\n"
                            ANSI_RESET);
                     getLimitInt(&pos, 0, n-1);
-                    if(compileStud(studs, n, pos))
+                    if(!compileStud(studs, n, pos))
                         printf(ANSI_RED "Nessuna modifica apportata..."
                                ANSI_RESET);
                 }
@@ -115,7 +104,7 @@ int main(int argc, char** argv) {
             case 3:
                 break;
             //ricerca studenti migliori
-            //e stampa totale degli studenti meritevoli (buona media pochi anni)
+            //e stampa totale degli studenti meritevoli
             case 4:
                 break;
             //nel caso l'utente inserisce 0 o altro esce
@@ -155,19 +144,19 @@ int compileStud(studenti* studs, int dim, int pos) {
     //chiede all'utente tutti i dati dello studente
     //cognome
     printf(ANSI_GREEN "Cognome: " ANSI_RESET);
-    //getString(studs[pos]->cognome);
+    getString(((studs+pos)->cognome));
     //nome
     printf(ANSI_GREEN "Nome: " ANSI_RESET);
-    //getString(studs[pos]->nome);
+    getString(((studs+pos)->nome));
     //corso
-    printf(ANSI_GREEN "Anno di corso attuale: " ANSI_RESET);
-    getLimitInt(&((studs+pos)->corso), 0, 5);
+    printf(ANSI_GREEN "Corso attuale: " ANSI_RESET);
+    getLimitInt(&((studs+pos)->corso), 1, 5);
     //voto
     printf(ANSI_GREEN "Voto: " ANSI_RESET);
     getLimitInt(&((studs+pos)->voto), 0, 10);
     //anni_iscrizione
-    printf(ANSI_GREEN "Numero di anni di iscrizione: " ANSI_RESET);
-    getLimitInt(&((studs+pos)->corso), 0, 20);
+    printf(ANSI_GREEN "Anni di iscrizione: " ANSI_RESET);
+    getLimitInt(&((studs+pos)->corso), 0, 30);
 
     return 1;
 }
@@ -205,8 +194,8 @@ void printPosStud(studenti* studs, int dim, int pos) {
     if(isEmptyStud(studs, pos))
         printf(ANSI_RED "\tNessun dato...\n" ANSI_RESET);
     else
-        printf("\t%s %s, frequenta il corso %d, iscritto/a da %d anni, \n"
-               "Ha una media di voti pari a %d.\n" ANSI_RESET,
+        printf("\t%s %s\n\tFrequenta il corso %d, iscritto/a da %d anni, \n"
+               "\tHa una media di voti pari a %d.\n" ANSI_RESET,
                studs[pos].cognome, studs[pos].nome,
                studs[pos].corso, studs[pos].anni_iscrizione,
                studs[pos].voto);
@@ -237,92 +226,21 @@ int isEmptyStud(studenti* studs, int pos) {
 }
 
 /*
- * funzione di controllo dell'input di un intero solo positivo
- * params: puntatore alla variabile dove salvare l'input
- * return: void
- */
-void getInt(int* x) {
-
-    do {
-        printf(ANSI_RESET "-->\t");
-        scanf(" %d", &*x);
-        getchar();
-        if(x == NULL)
-            printf(ANSI_RED
-                   "Valore non valido!\n"
-                   ANSI_RESET);
-    } while(x == NULL);
-
-}
-
-/*
- * funzione di controllo dell'input di un intero
- * con un valore minimo e un massimo
- * params: puntatore alla variabile dove salvare l'input
- *         valore minimo accettato
- *         valore massimo accettato
- * return: void
- */
-void getLimitInt(int* x, int min, int max) {
-
-    do {
-        printf(ANSI_RESET "-->\t");
-        scanf(" %d", &*x);
-        getchar();
-        if(*x < min || *x > max)
-            printf(ANSI_RED
-                   "Valore non valido! (deve essere compreso tra %d e %d)\n"
-                   ANSI_RESET, min, max);
-    } while(*x < min || *x > max);
-
-}
-
-/*
- * funzione che riceve una stringa dall'utente e la controlla
- * params: puntatore alla variabile dove salvare l'input
- * return: void
- */
-void getString(char* str) {
-
-    //controlla che riceva un input valido (accetta spazi)
-    do {
-        printf(ANSI_RESET "-->\t");
-        //str = fgets(str, MAX_CHAR, stdin);
-		scanf(" %s", str);
-		printf("stringa = %s\n", str);
-        if(str == NULL)
-            printf(ANSI_RED
-                   "Stringa non valida! Re-inseriscila\n"
-                   ANSI_RESET);
-    } while(str == NULL);
-
-}
-
-/*
  * funzione che ritorna il puntatore della nuova array di studenti allocata
  * con tutti i valori a 0 e con i controlli se c'e' spazio per allocarla
  * params: dimensione dell'array
  * return puntatore alla prima struttura dell'array
  */
 
-studenti* newArr(int dim) {
+studenti* newStudArr(int dim) {
     studenti* st = NULL;
-	int i = 0;
 
-    if(! (st = (studenti*) malloc(sizeof(studenti)*dim)) ) {
+    if(!(st = (studenti*)calloc(dim, sizeof(studenti)))) {
         printf(ANSI_RED
                "Impossibile allocare l'array di studenti!\n"
                ANSI_RESET);
         return NULL;
     }
-	//e inizializza tutto a 0
-	for(i = 0; i < dim; i++) {
-		st[i].cognome = NULL;
-		st[i].nome = NULL;
-		st[i].corso = 0;
-		st[i].voto = 0;
-		st[i].anni_iscrizione = 0;
-	}
 
     return st;
 }
