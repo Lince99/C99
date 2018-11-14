@@ -37,6 +37,7 @@ int compileAllStud(studenti* studs, int dim);
 void printPosStud(studenti* studs, int pos);
 int isEmptyStud(studenti* studs, int pos);
 void saveStud(studenti* studs, int dim, char* fname);
+void readStud(studenti* studs, int dim, char* fname);
 int findBestStud(studenti* studs, int dim, int flag);
 
 
@@ -84,7 +85,7 @@ int main(int argc, char** argv) {
                 //inserimento dei dati dei singoli studenti
                 if(pos == 1) {
                     printf(ANSI_GREEN "Inserisci la posizione in cui si vuole "
-                           "inserire i dati:\n [da 0 a %d]\n" ANSI_RESET, n);
+                           "inserire i dati:\n[da 0 a %d]\n" ANSI_RESET, n);
                     getLimitInt(&pos, 0, n-1);
                     if(!compileStud(studs, n, pos))
                         printf(ANSI_RED "Nessuna modifica apportata...\n"
@@ -95,9 +96,10 @@ int main(int argc, char** argv) {
                     compileAllStud(studs, n);
                 }
                 else {
-                    //TODO leggi da file
-                    printf(ANSI_RED "Funzione non ancora supportata...\n"
-                           ANSI_RESET);
+                    //legge da un file formattato
+					printf(ANSI_GREEN "Da dove lo vuoi leggere?\n" ANSI_RESET);
+	                getString(&fileName);
+	                readStud(studs, n, fileName);
                 }
                 break;
             //stampa dell'array di studenti
@@ -106,7 +108,7 @@ int main(int argc, char** argv) {
                 for(pos = 0; pos < n; pos++)
                     printPosStud(studs, pos);
                 break;
-            //salva i dati su file //TODO
+            //salva i dati su file
             case 3:
                 printf(ANSI_GREEN "Dove lo vuoi salvare?\n" ANSI_RESET);
                 getString(&fileName);
@@ -168,7 +170,7 @@ int compileStud(studenti* studs, int dim, int pos) {
         printf(ANSI_RED "Elemento presente in posizione %d\n" ANSI_RESET, pos);
         printPosStud(studs, pos);
         //e chiede all'utente se e' sicuro di sovrascriverli
-        printf(ANSI_GREEN "Vuoi modificarlo? [1 = si, 0 = no]\n" ANSI_RESET);
+        printf(ANSI_GREEN "Vuoi modificarlo?\n[1 = si, 0 = no]\n" ANSI_RESET);
         getLimitInt(&flag, 0, 1);
         if(!flag)
             return 0;
@@ -283,6 +285,37 @@ void saveStud(studenti* studs, int dim, char* fname) {
               studs[i].voto,
               studs[i].anniIscrizione);
     }
+    printf(ANSI_BLUE "File salvato!\n" ANSI_RESET);
+
+    fclose(fp);
+}
+
+/*
+ * funzione che legge i dati dal file e li salva nelle strutture
+ * params: puntatore all'array di studenti
+ *         dimensione dell'array
+ *         nome del file
+ * return: void
+ */
+ //TODO
+void readStud(studenti* studs, int dim, char* fname) {
+    FILE* fp = NULL;
+    int i = 0;
+
+    if( (fp = fopen(fname, "r")) == NULL) {
+        printf(ANSI_RED "Impossibile aprire il file!\n" ANSI_RESET);
+        return;
+    }
+	//legge riga per riga il file estraendo i dati separati da una tabulazione
+	for(i = 0; i < dim; i++) {
+		fscanf(fp, "%s\t%s\t%d\t%d\t%d\n",
+			  (studs+i)->cognome,
+			  (studs+i)->nome,
+			  &((studs+i)->corso),
+			  &((studs+i)->voto),
+			  &((studs+i)->anniIscrizione) );
+		printPosStud(studs, i);
+	}
     printf(ANSI_BLUE "File salvato!\n" ANSI_RESET);
 
     fclose(fp);
