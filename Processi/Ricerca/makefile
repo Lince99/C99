@@ -1,12 +1,8 @@
-#Basso Nicola
-#4^AI
-#sono disponibili: all, compile, clean, run
-
 CC=gcc
 RM=rm -f
 
-SRC=studenti.c
-EXC=studenti
+SRC=multi_search.c
+EXC=multi_search
 
 all: clean compile run
 
@@ -14,10 +10,9 @@ compile:
 	$(CC) -o $(EXC) $(SRC)
 
 clean:
-	reset
+	#reset
 	#ls -la --color
 	$(RM) $(EXC)
-	$(RM) *.txt
 
 run:
 	./$(EXC)
