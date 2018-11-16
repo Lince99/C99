@@ -49,6 +49,21 @@ int main(int argc, char** argv) {
     int next = 0; /* posizione finale per la ricerca per 1 processo */
     struct timeval stop, start; /* variabili per salvare il tempo */
     double timeTot; /* tempo totale impiegato dalla ricerca */
+    /* possibile soluzione POSIX-compliant
+    http://man7.org/linux/man-pages/man2/clock_gettime.2.html
+    static double TimeSpecToSeconds(struct timespec* ts)
+    {
+        return (double)ts->tv_sec + (double)ts->tv_nsec / 1000000000.0;
+    }
+    //. . . .
+    struct timespec start;
+    struct timespec end;
+    double elapsedSeconds;
+    if(clock_gettime(CLOCK_MONOTONIC, &start)) { //handle error }
+    //Do stuff
+    if(clock_gettime(CLOCK_MONOTONIC, &end)) { //handle error }
+    elapsedSeconds = TimeSpecToSeconds(&end) - TimeSpecToSeconds(&start);
+    */
 
 	//- - - - - - - - - - - - RICHIESTE DATI UTENTE - - - - - - - - - - - - - //
     //crea un vettore di dimensioni scelte dall'utente
@@ -59,7 +74,6 @@ int main(int argc, char** argv) {
                ANSI_RESET);
         return 1;
     }
-
     //chiede se vuole numeri random ripetuti o univochi
     printf(ANSI_BLUE
            "Desideri usare numeri generati unici?\n"
@@ -92,6 +106,8 @@ int main(int argc, char** argv) {
 
 	//- - - - - - - - - - - - RICERCA MULTIPROCESSO - - - - - - - - - - - - - //
 	//salva il tempo del punto di partenza
+    //funzione non compatibile con POSIX.1-2008
+    //TODO sostituire con clock_gettime()
 	gettimeofday(&start, NULL);
     //l'utente sceglie che valore cercare
     printf(ANSI_BLUE "Quale valore vuoi cercare nell'array?\n" ANSI_RESET);
@@ -121,22 +137,23 @@ int main(int argc, char** argv) {
             //return 0;
             exit(0);
         }
-        //il padre aspetta che il figlio termini la ricerca
-        else if(pid > 0) {
-            waitpid(pid, NULL, 0);
-            wait(NULL);
+        //il padre aspetta che i figli terminino la ricerca
+        else if(pid > 0 && i == nProc-1) {
+            //waitpid(pid, NULL, 0);
+            //wait(NULL);
         }
         else if(pid < 0){
             printf(ANSI_RED "Errore nel fork %d!\n" ANSI_RESET, pid);
             exit(1);
         }
     }
+    waitpid(pid, NULL, 0);
     //salva il tempo del punto di arrivo
 	gettimeofday(&stop, NULL);
 	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 +
 			  (double)(stop.tv_sec - start.tv_sec);
 	//stampa il tempo totale impiegato
-	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %f ms\n"
+	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %f [s]\n\n"
 		   ANSI_RESET, nProc, timeTot);
 
     //- - - - - - - - - - - RICERCA SINGOLO PROCESSO - - - - - - - - - - - - -//
@@ -147,13 +164,14 @@ int main(int argc, char** argv) {
 			  "con il processo singolo\n" ANSI_RESET);
     //salva il tempo del punto di arrivo
 	gettimeofday(&stop, NULL);
-    //salva il tempo del punto di arrivo
-	gettimeofday(&stop, NULL);
 	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 +
 			  (double)(stop.tv_sec - start.tv_sec);
 	//stampa il tempo totale impiegato
-	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %f ms\n"
-		   ANSI_RESET, nProc, timeTot);
+	printf(ANSI_GREEN "Tempo totale impiegato dal singolo processo = %f [s]\n\n"
+		   ANSI_RESET, timeTot);
+
+    //export17445516112018.csv --> export 17:44:55 16/11/2018
+    printf("timestamp = %s\n", getTimestamp(0));
 
     return 0;
 }
