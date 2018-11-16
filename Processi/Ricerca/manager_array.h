@@ -285,7 +285,7 @@ int* quickSort(int* arr, int dim) {
  * return: int della prima posizione dell'elemento
  */
 /*TODO
-int* searchPosElem(int* arr, int start, int end, int x) {
+int* searchRetElem(int* arr, int start, int end, int x) {
 	int* found = NULL; //array di elementi trovati
 	int dimFound = 0;
 	int i = 0;

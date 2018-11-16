@@ -178,7 +178,7 @@ int* quickSort(int* arr, int dim) {
  * funzione di ricerca lineare in una porzione di array
  */
 /*TODO
-int* searchElem(int* arr, int start, int end, int x) {
+int* searchRetElem(int* arr, int start, int end, int x) {
 	int* found = NULL; //array di elementi trovati
 	int dimFound = 0;
 	int i = 0;
