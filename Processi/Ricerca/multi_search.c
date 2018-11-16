@@ -29,6 +29,7 @@
 #include <sys/time.h> //gettimeofday
 #include "input_check.h" //valid input
 #include "manager_array.h" //newArr, initRandom
+#include "manager_file.h" //saveToFile, printFile
 
 //globals
 int* arr = NULL; /* array su cui ricercare */
@@ -132,12 +133,12 @@ int main(int argc, char** argv) {
     }
     //salva il tempo del punto di arrivo
 	gettimeofday(&stop, NULL);
-	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 + 
+	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 +
 			  (double)(stop.tv_sec - start.tv_sec);
 	//stampa il tempo totale impiegato
 	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %f ms\n"
 		   ANSI_RESET, nProc, timeTot);
-    
+
     //- - - - - - - - - - - RICERCA SINGOLO PROCESSO - - - - - - - - - - - - -//
     //salva il tempo del punto di partenza
     gettimeofday(&start, NULL);
@@ -148,7 +149,7 @@ int main(int argc, char** argv) {
 	gettimeofday(&stop, NULL);
     //salva il tempo del punto di arrivo
 	gettimeofday(&stop, NULL);
-	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 + 
+	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 +
 			  (double)(stop.tv_sec - start.tv_sec);
 	//stampa il tempo totale impiegato
 	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %f ms\n"
