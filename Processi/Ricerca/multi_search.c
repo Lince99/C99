@@ -28,7 +28,7 @@
 #include <sys/types.h> //pid_t
 #include <sys/time.h> //gettimeofday
 #include "input_check.h" //valid input
-#include "manager_array.h" //newArr, initRandom, spitArr
+#include "manager_array.h" //newArr, initRandom
 
 //globals
 int* arr = NULL; /* array su cui ricercare */
@@ -47,6 +47,7 @@ int main(int argc, char** argv) {
     int prev = 0; /* posizione inziale da dove cercare per 1 processo */
     int next = 0; /* posizione finale per la ricerca per 1 processo */
     struct timeval stop, start; /* variabili per salvare il tempo */
+    double timeTot; /* tempo totale impiegato dalla ricerca */
 
 	//- - - - - - - - - - - - RICHIESTE DATI UTENTE - - - - - - - - - - - - - //
     //crea un vettore di dimensioni scelte dall'utente
@@ -105,9 +106,8 @@ int main(int argc, char** argv) {
         prev = next;
         if(i == nProc-1)
             next = maxElem;
-        else {
+        else
             next = prev + (int)(maxElem/nProc);
-        }
         //crea il processo figlio per nProc volte
         pid = fork();
         if(pid == 0) {
@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
         //il padre aspetta che il figlio termini la ricerca
         else if(pid > 0) {
             waitpid(pid, NULL, 0);
-            //wait(NULL);
+            wait(NULL);
         }
         else if(pid < 0){
             printf(ANSI_RED "Errore nel fork %d!\n" ANSI_RESET, pid);
@@ -132,11 +132,11 @@ int main(int argc, char** argv) {
     }
     //salva il tempo del punto di arrivo
 	gettimeofday(&stop, NULL);
+	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 + 
+			  (double)(stop.tv_sec - start.tv_sec);
 	//stampa il tempo totale impiegato
 	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %f ms\n"
-		   ANSI_RESET, nProc,
-		   (double)(stop.tv_usec - start.tv_usec) / 1000000 + 
-		   (double)(stop.tv_sec - start.tv_sec));
+		   ANSI_RESET, nProc, timeTot);
     
     //- - - - - - - - - - - RICERCA SINGOLO PROCESSO - - - - - - - - - - - - -//
     //salva il tempo del punto di partenza
@@ -146,11 +146,13 @@ int main(int argc, char** argv) {
 			  "con il processo singolo\n" ANSI_RESET);
     //salva il tempo del punto di arrivo
 	gettimeofday(&stop, NULL);
+    //salva il tempo del punto di arrivo
+	gettimeofday(&stop, NULL);
+	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 + 
+			  (double)(stop.tv_sec - start.tv_sec);
 	//stampa il tempo totale impiegato
 	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %f ms\n"
-		   ANSI_RESET, nProc,
-		   (double)(stop.tv_usec - start.tv_usec) / 1000000 + 
-		   (double)(stop.tv_sec - start.tv_sec));
+		   ANSI_RESET, nProc, timeTot);
 
     return 0;
 }
