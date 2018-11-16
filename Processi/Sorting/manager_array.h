@@ -10,6 +10,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "colors.h"
 
 //definizioni
 void addElem(int** arr, int dim, int x);
@@ -28,7 +29,8 @@ int* initRandom(int* arr, int min, int max, int dim) {
     srand((unsigned) time(NULL));
 
     if( !(arr = (int*) malloc(sizeof(int)*dim)) ) {
-        printf("Spazio Insufficiente per allocare l'array!\n");
+        printf(ANSI_RED "Spazio Insufficiente per allocare l'array!\n" 
+	       ANSI_RESET);
         return NULL;
     }
     //ad ogni elemento viene assegnato un numero random in base al tempo
@@ -40,8 +42,8 @@ int* initRandom(int* arr, int min, int max, int dim) {
 }
 
 /*
- * accetta come parametri l'array, il numero minimo 
- * e il massimo generabili, il valore da escludere 
+ * accetta come parametri l'array, il numero minimo
+ * e il massimo generabili, il valore da escludere
  * e la dimensione dell'array
  */
 int* initExcludeRandom(int* arr, int min, int max, int exc, int dim) {
@@ -49,7 +51,8 @@ int* initExcludeRandom(int* arr, int min, int max, int exc, int dim) {
     int gen = 0;
 
     if( !(arr = (int*) malloc(sizeof(int)*dim)) ) {
-        printf("Spazio Insufficiente per allocare l'array!\n");
+        printf(ANSI_RED "Spazio Insufficiente per allocare l'array!\n"
+	       ANSI_RESET);
         return NULL;
     }
     //ad ogni elemento viene assegnato un numero random in base al tempo
@@ -70,7 +73,8 @@ int* initExcludeRandom(int* arr, int min, int max, int exc, int dim) {
 int* initZeroes(int* arr, int dim) {
 
     if( !(arr = (int*) calloc(dim, sizeof(int))) ) {
-        printf("Spazio Insufficiente per allocare l'array!\n");
+        printf(ANSI_RED "Spazio Insufficiente per allocare l'array!\n"
+		ANSI_RESET);
         return NULL;
     }
 
@@ -238,7 +242,7 @@ void excg(void* a, void* b) {
  * aggiunge un elemento ad un'array
  */
 void addElem(int** arr, int dim, int x) {
-	
+
 	//realloca la memoria per aggiungergli il valore x
 	*arr = (int*)realloc(*arr, dim+1);
 	*(*(arr+dim)) = x;
@@ -270,7 +274,7 @@ void printArr(int* arr, int dim) {
 
 /*
  * dato un'array e la sua dimensione
- * stampa in stdout l'array formattata 
+ * stampa in stdout l'array formattata
  * e oltre gli 80 caratteri va a capo
  */
  /*TODO

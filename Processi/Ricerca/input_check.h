@@ -6,7 +6,11 @@
  * libreria contenente funzioni di input formattati e controllati
  */
 
-#include <string.h>
+#include <stdio.h> //printf
+#include <stdlib.h>
+#include <string.h> //strlen
+#include <limits.h> //INT_MAX
+#include "colors.h" //printf colors
 
 //massimo numero di caratteri per i nomi e cognomi
 #ifndef MAX_CHAR
@@ -23,7 +27,7 @@
 void getInt(int* x) {
 
     do {
-        printf(ANSI_RESET "-->\t");
+        printf(ANSI_GREEN "-->\t" ANSI_RESET);
         scanf(" %d", &*x);
         getchar();
         if(x == NULL)
@@ -73,7 +77,7 @@ void getString(char** str) {
     }
     //controlla che riceva un input valido (accetta spazi)
     do {
-        printf(ANSI_RESET " -->\t");
+        printf(ANSI_GREEN "-->\t" ANSI_RESET);
         *str = fgets(*str, MAX_CHAR, stdin);
         lung = strlen(*str);
         //pulisce l'invio finale
