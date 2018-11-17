@@ -27,13 +27,13 @@
 #include <sys/wait.h> //wait
 #include <sys/types.h> //pid_t
 #include <sys/time.h> //gettimeofday
-#include "input_check.h" //valid input
-#include "manager_array.h" //newArr, initRandom
-#include "manager_file.h" //saveToFile, printFile
+#include "lib/input_check.h" //valid input
+#include "lib/manager_array.h" //newArr, initRandom
+#include "lib/manager_file.h" //saveToFile, printFile
 
 //globals
 int* arr = NULL; /* array su cui ricercare */
-
+//TODO aggiungere report
 
 
 int main(int argc, char** argv) {
@@ -69,6 +69,7 @@ int main(int argc, char** argv) {
     //crea un vettore di dimensioni scelte dall'utente
     printf(ANSI_BLUE "Inserisci la dimensione dell'array:\n" ANSI_RESET);
     getLimitInt(&maxElem, 1, INT_MAX);
+    //alloca l'array controllando che non ecceda il limite
     if((arr = newArr(arr, maxElem)) == NULL) {
         printf(ANSI_RED "Impossibile proseguire senza un'array valida!\n"
                ANSI_RESET);
@@ -105,10 +106,6 @@ int main(int argc, char** argv) {
     printArr(arr, maxElem);
 
 	//- - - - - - - - - - - - RICERCA MULTIPROCESSO - - - - - - - - - - - - - //
-	//salva il tempo del punto di partenza
-    //funzione non compatibile con POSIX.1-2008
-    //TODO sostituire con clock_gettime()
-	gettimeofday(&start, NULL);
     //l'utente sceglie che valore cercare
     printf(ANSI_BLUE "Quale valore vuoi cercare nell'array?\n" ANSI_RESET);
     getInt(&elem);
@@ -117,6 +114,12 @@ int main(int argc, char** argv) {
            ANSI_RESET, maxElem);
     getLimitInt(&nProc, 1, maxElem);
 
+    printf(ANSI_BLUE "\nRicerca dell'elemento %d con %d processi...\n"
+           ANSI_RESET, elem, nProc);
+    //salva il tempo del punto di partenza
+    //funzione non compatibile con POSIX.1-2008
+    //TODO sostituire con clock_gettime()
+	gettimeofday(&start, NULL);
     //crea nProc processi per la ricerca nell'array suddivisa
     for(i = 0; i < nProc; i++) {
         //suddivide l'array tra i vari processi
@@ -133,13 +136,13 @@ int main(int argc, char** argv) {
                 printf(ANSI_GREEN "\tdal processo %d\n", getpid());
             else
                 printf(ANSI_YELLOW "Nessuna corrsispondenza trovata\n"
-                      "\tdal processo %d\n" ANSI_RESET, getpid());
+                       ANSI_YELLOW "\tdal processo %d\n" ANSI_RESET, getpid());
             //return 0;
             exit(0);
         }
         //il padre aspetta che i figli terminino la ricerca
         else if(pid > 0 && i == nProc-1) {
-            //waitpid(pid, NULL, 0);
+            waitpid(pid, NULL, 0);
             //wait(NULL);
         }
         else if(pid < 0){
@@ -147,6 +150,7 @@ int main(int argc, char** argv) {
             exit(1);
         }
     }
+    //il padre aspetta che l'ultimo processo termini
     waitpid(pid, NULL, 0);
     //salva il tempo del punto di arrivo
 	gettimeofday(&stop, NULL);
@@ -157,6 +161,8 @@ int main(int argc, char** argv) {
 		   ANSI_RESET, nProc, timeTot);
 
     //- - - - - - - - - - - RICERCA SINGOLO PROCESSO - - - - - - - - - - - - -//
+    printf(ANSI_BLUE "\nRicerca dell'elemento %d con processo singolo...\n"
+           ANSI_RESET, elem);
     //salva il tempo del punto di partenza
     gettimeofday(&start, NULL);
     if(!searchPrintElem(arr, 0, maxElem, elem))
@@ -170,7 +176,7 @@ int main(int argc, char** argv) {
 	printf(ANSI_GREEN "Tempo totale impiegato dal singolo processo = %f [s]\n\n"
 		   ANSI_RESET, timeTot);
 
-    //export17445516112018.csv --> export 17:44:55 16/11/2018
+    //TODO export17445516112018.csv --> export 17:44:55 16/11/2018
     printf("timestamp = %s\n", getTimestamp(0));
 
     return 0;

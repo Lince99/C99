@@ -1,5 +1,9 @@
 /*
  * Basso Nicola
+ * 4^AI
+ */
+/*
+ * libreria dedicata solamente alla definizione delle costanti dei colori
  */
 
 #define ANSI_RED     "\x1b[31m"

@@ -4,13 +4,13 @@ RM=rm -f
 SRC=multi_search.c
 EXC=multi_search
 
-all: clean compile run
+all: compile run
 
 compile:
 	$(CC) -o $(EXC) $(SRC)
 
 clean:
-	#reset
+	reset
 	#ls -la --color
 	$(RM) $(EXC)
 

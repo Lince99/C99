@@ -7,7 +7,7 @@
  */
 
 #include <stdio.h> //printf
-#include <stdlib.h>
+#include <stdlib.h> //atoi, malloc
 #include <string.h> //strlen
 #include <limits.h> //INT_MAX
 #include "colors.h" //printf colors
@@ -17,6 +17,11 @@
     #define MAX_CHAR 50
 #endif
 
+//firme
+void getInt(int* x);
+void getLimitInt(int* x, int min, int max);
+void getString(char** str);
+
 
 
 /*
@@ -25,11 +30,14 @@
  * return: void
  */
 void getInt(int* x) {
+    char* str = NULL;
 
     do {
-        printf(ANSI_GREEN "-->\t" ANSI_RESET);
-        scanf(" %d", &*x);
-        getchar();
+        //printf(ANSI_GREEN "-->\t" ANSI_RESET);
+        //scanf(" %d", &*x);
+        //getchar();
+        getString(&str);
+        *x = atoi(str);
         if(x == NULL)
             printf(ANSI_RED
                    "Valore non valido!\n"
@@ -47,11 +55,14 @@ void getInt(int* x) {
  * return: void
  */
 void getLimitInt(int* x, int min, int max) {
+    char* str = NULL;
 
     do {
-        printf(ANSI_RESET "-->\t");
-        scanf(" %d", &*x);
-        getchar();
+        //printf(ANSI_GREEN "-->\t" ANSI_RESET);
+        //scanf(" %d", &*x);
+        //getchar();
+        getString(&str);
+        *x = atoi(str);
         if(*x < min || *x > max)
             printf(ANSI_RED
                    "Valore non valido! (deve essere compreso tra %d e %d)\n"

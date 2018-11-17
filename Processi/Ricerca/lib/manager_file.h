@@ -10,7 +10,6 @@
 #include <time.h>
 
 
-
 /* funzione che scrive sul file l'array passata
  * params: puntatore all'array
  *         dimensione dell'array
@@ -79,9 +78,9 @@ char* getTimestamp(int flag) {
         //alloca la dimensione fissa in caso di data normale
         res = (char*) malloc(sizeof(char)*14);
         //modificare l'ordine dei parametri per cambiare formato della data
-        if( sprintf(res, "%d%d%d%d%d%d",
-                    tm.tm_hour, tm.tm_min, tm.tm_sec,
-                    tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900) < 0) {
+        if(sprintf(res, "%d%d%d%d%d%d",
+                   tm.tm_hour, tm.tm_min, tm.tm_sec,
+                   tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900) < 0) {
             printf(ANSI_RED "Impossibile creare il timestamp!\n" ANSI_RESET);
             return "";
         }
@@ -94,19 +93,20 @@ char* getTimestamp(int flag) {
  * funzione che salva in un file csv la matrice di stringhe passate
  * params: stringa del nome del file su cui salvare
  *         flag addTime se = 0 allora non aggiunge il tempo al nome, se > 0 si
- *         matrice di stringhe da cui leggere
+ *         struttura contenente tutti i dati da stampare
  *         dimensione x della matrice (larghezza)
  *         dimensione y della matrice (altezza)
  * return: void
  */
-void saveToCsv(char* fileName, int addTime, char** matrix, int x, int y) {
+/*TODO
+void saveToCsv(char* fileName, int addTime, ) {
     FILE* fp = NULL;
     char* timeStr = NULL;
     int i = 0;
     int j = 0;
 
     //se viene aggiunto il timestamp
-    if(flag) {
+    if(addTime) {
         //concatena il fileName con il timestamp timeStr
         timeStr = getTimestamp(0);
         fileName = realloc(fileName, strlen(fileName)+strlen(timeStr));
@@ -121,13 +121,13 @@ void saveToCsv(char* fileName, int addTime, char** matrix, int x, int y) {
     }
     //scrive la riga di intestazione delle colonne
     fprintf(fp, "'ARRAY';'TIME_SINGLE';'TIME_MULTI';'MAXELEM';'UNIQUE';'MIN';'MAX';'ELEM'");
-    //salva la matrice nel file
+    //salva la matrice di caratteri nel file
     for(i = 1; i < y; i++) {
-        for(j = 0; j < x; j++) {
-            //TODO
-        }
+        //formattazione csv: separatore = ;   delimitatore di stringa = '
+        //val, timeS, timeM, dim, uniq, minG, maxG, elem
+        fprintf(fp, "%d;'%ld';'%ld';%d;%d;%d;%d;%d\n", );
     }
 
     fclose(fp);
 
-}
+}*/
