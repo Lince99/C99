@@ -6,10 +6,20 @@
  * libreria contenente funzioni di input formattati e controllati
  */
 
-#include <string.h>
+#include <stdio.h> //printf
+#include <stdlib.h> //atoi, malloc
+#include <string.h> //strlen
+#include "colors.h" //printf colors
 
 //massimo numero di caratteri per i nomi e cognomi
-#define MAX_CHAR 50
+#ifndef MAX_CHAR
+    #define MAX_CHAR 50
+#endif
+
+//firme
+void getInt(int* x);
+void getLimitInt(int* x, int min, int max);
+void getString(char** str);
 
 
 
@@ -19,11 +29,14 @@
  * return: void
  */
 void getInt(int* x) {
+    char* str = NULL;
 
     do {
-        printf(ANSI_RESET "-->\t");
-        scanf(" %d", &*x);
-        getchar();
+        //printf(ANSI_GREEN "-->\t" ANSI_RESET);
+        //scanf(" %d", &*x);
+        //getchar();
+        getString(&str);
+        *x = atoi(str);
         if(x == NULL)
             printf(ANSI_RED
                    "Valore non valido!\n"
@@ -41,11 +54,14 @@ void getInt(int* x) {
  * return: void
  */
 void getLimitInt(int* x, int min, int max) {
+    char* str = NULL;
 
     do {
-        printf(ANSI_RESET "-->\t");
-        scanf(" %d", &*x);
-        getchar();
+        //printf(ANSI_GREEN "-->\t" ANSI_RESET);
+        //scanf(" %d", &*x);
+        //getchar();
+        getString(&str);
+        *x = atoi(str);
         if(*x < min || *x > max)
             printf(ANSI_RED
                    "Valore non valido! (deve essere compreso tra %d e %d)\n"
@@ -71,7 +87,7 @@ void getString(char** str) {
     }
     //controlla che riceva un input valido (accetta spazi)
     do {
-        printf(ANSI_RESET " -->\t");
+        printf(ANSI_GREEN "-->\t" ANSI_RESET);
         *str = fgets(*str, MAX_CHAR, stdin);
         lung = strlen(*str);
         //pulisce l'invio finale

@@ -8,14 +8,14 @@ RM=rm -f
 SRC=studenti.c
 EXC=studenti
 
-all: clean compile run
+all: compile run
 
 compile:
+	cat README.txt
 	$(CC) -o $(EXC) $(SRC)
 
 clean:
-	reset
-	#ls -la --color
+	#reset
 	$(RM) $(EXC)
 	$(RM) *.txt
 
