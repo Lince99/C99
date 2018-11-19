@@ -1,3 +1,5 @@
+#stupid thing
+
 find ./CursesGraphic -type f -executable -delete
 find ./Exam_procs -type f -executable -delete
 find ./Puntatori -type f -executable -delete
