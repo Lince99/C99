@@ -3,13 +3,34 @@
  * 4^AI
  */
 /*
- * libreria dedicata solamente alla definizione delle costanti dei colori
+ * libreria dedicata solamente alla dichiarazione delle costanti
+ * per colorare le stampe
  */
 
-#define ANSI_RED     "\x1b[31m"
-#define ANSI_GREEN   "\x1b[32m"
-#define ANSI_YELLOW  "\x1b[33m"
-#define ANSI_BLUE    "\x1b[34m"
-#define ANSI_MAGENTA "\x1b[35m"
-#define ANSI_CYAN    "\x1b[36m"
-#define ANSI_RESET   "\x1b[0m"
+#ifndef ANSI_RED
+    #define ANSI_RED     "\x1b[31m"
+#endif
+
+#ifndef ANSI_GREEN
+    #define ANSI_GREEN   "\x1b[32m"
+#endif
+
+#ifndef ANSI_YELLOW
+    #define ANSI_YELLOW  "\x1b[33m"
+#endif
+
+#ifndef ANSI_BLUE
+    #define ANSI_BLUE    "\x1b[34m"
+#endif
+
+#ifndef ANSI_MAGENTA
+    #define ANSI_MAGENTA "\x1b[35m"
+#endif
+
+#ifndef ANSI_CYAN
+    #define ANSI_CYAN    "\x1b[36m"
+#endif
+
+#ifndef ANSI_RESET
+    #define ANSI_RESET   "\x1b[0m"
+#endif

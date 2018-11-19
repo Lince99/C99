@@ -11,7 +11,6 @@ EXC=studenti
 all: compile run
 
 compile:
-	cat README.txt
 	$(CC) -o $(EXC) $(SRC)
 
 clean:

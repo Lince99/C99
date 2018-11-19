@@ -38,10 +38,12 @@ int main(int argc, char** argv) {
            "Programma dedicato alla gestione dei dati degli studenti.\n"
            "- - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
            ANSI_RESET);
+
 	//richiesta di quanti studenti si vogliono creare
     printf(ANSI_GREEN "Quanti studenti vuoi inserire?\n" ANSI_RESET);
     getLimitInt(&n, 1, INT_MAX);
     studs = newStudArr(n);
+
     //stampa del menu di gestione degli studenti
     do {
         printf(ANSI_GREEN "\nCosa vuoi fare?\n"
@@ -105,7 +107,7 @@ int main(int argc, char** argv) {
             //nel caso l'utente inserisce 0 o altro esce
             default:
                 printf(ANSI_RED "Uscita dal programma...\n" ANSI_RESET);
-                return 0;
+                break;
         }
     } while(scelta);
 

@@ -82,8 +82,7 @@ char* getChars(int argc, char** argv, char* option, char* fullOption) {
           (strcmp(argv[i], option) ||
            strcmp(argv[i], fullOption) )) {
             str = argv[i+1];
-            //if(strlen(str) > 0)
-            //    str = (char*) realloc(str, sizeof(char)*(strlen(str)+1) );
+            //TODO aggiungere realloc per risparmiare memoria
             return str;
         }
     }
