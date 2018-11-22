@@ -90,44 +90,68 @@ char* getTimestamp(int flag) {
 }
 
 /*
+ * struttura dati dedicata al settaggio del file csv per salvare un confronto
+ * tra due misurazioni temporali
+ */
+typedef struct CSV_FILE_TIME {
+    char* intestation; /* intestazione della tabella */
+    char sep; /* carattere utilizzato come separatore di campi */
+    char strler; /* carattere utilizzabile come identificatore di stringhe */
+    double times[2]; /* tempo di ricerca a processo singolo
+                        e tempo di ricerca a processo multiplo */
+    int dim; /* dimensione dell'array usata come test */
+} csv_time;
+
+/*
+ * funzione che concatena il prefisso del file,
+ * la versione o data e l'estensione passati come parametri
+ */
+char* fileStrcat(char* prefix, char* second, char* extension) {
+    int dim = 0;
+    char* result = NULL;
+
+    //somma le varie dimensioni dei parametri per allocare la stringa
+    dim = strlen(prefix)+strlen(second)+strlen(extension);
+    result = (char*) calloc(dim, sizeof(char));
+    //concatena le stringhe
+    strcat(result, prefix);
+    strcat(result, second);
+    strcat(result, extension);
+
+    return result;
+}
+
+/*
  * funzione che salva in un file csv la matrice di stringhe passate
  * params: stringa del nome del file su cui salvare
- *         flag addTime se = 0 allora non aggiunge il tempo al nome, se > 0 si
- *         struttura contenente tutti i dati da stampare
- *         dimensione x della matrice (larghezza)
- *         dimensione y della matrice (altezza)
+ *         addTime contiene il timestamp da aggiungere
+ *         dati da salvare nella tabella
  * return: void
  */
-/*TODO
-void saveToCsv(char* fileName, int addTime, ) {
-    FILE* fp = NULL;
-    char* timeStr = NULL;
-    int i = 0;
-    int j = 0;
+void saveToCsv(char* fileName, csv_time report) {
+    FILE* fp = NULL; /* puntatore al file dove salvare i dati */
+    int tmp = 0; /* variabile temporanea usata per allocazioni e ritorni */
 
-    //se viene aggiunto il timestamp
-    if(addTime) {
-        //concatena il fileName con il timestamp timeStr
-        timeStr = getTimestamp(0);
-        fileName = realloc(fileName, strlen(fileName)+strlen(timeStr));
-        strcat(fileName, timeStr);
-    }
 
     //crea il file
-    if((fp = fopen(fileName, "w+")) == NULL) {
+    if((fp = fopen(fileName, "a+")) == NULL) {
         printf(ANSI_RED "Impossibile creare o scrivere sul file!\n"
                ANSI_RESET);
         exit(1);
     }
-    //scrive la riga di intestazione delle colonne
-    fprintf(fp, "'ARRAY';'TIME_SINGLE';'TIME_MULTI';'MAXELEM';'UNIQUE';'MIN';'MAX';'ELEM'");
-    //salva la matrice di caratteri nel file
-    for(i = 1; i < y; i++) {
-        //formattazione csv: separatore = ;   delimitatore di stringa = '
-        //val, timeS, timeM, dim, uniq, minG, maxG, elem
-        fprintf(fp, "%d;'%ld';'%ld';%d;%d;%d;%d;%d\n", );
-    }
+
+    //se il file e' nuovo stampa l'intestazione della tabella
+    if(fscanf(fp, "%d", &tmp) == EOF)
+        fprintf(fp, "%s\n", report.intestation);
+
+    /*stampa prima la dimensione,
+     * poi il tempo impiegato dal singolo processo
+     * e infine dal multiprocesso
+     */
+    fprintf(fp, "%d%c%c%f%c%c%c%f%c\n",
+            report.dim, report.sep,
+            report.strler, report.times[0], report.strler, report.sep,
+            report.strler, report.times[1], report.strler);
 
     fclose(fp);
-
-}*/
+}

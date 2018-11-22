@@ -5,8 +5,8 @@
 CC=gcc
 RM=rm -f
 
-SRC=dyn_array.c
-EXC=dyn_array
+SRC=lists.c
+EXC=lists
 
 all: compile run
 

@@ -48,24 +48,25 @@ int main(int argc, char** argv) {
     int prev = 0; /* posizione inziale da dove cercare per 1 processo */
     int next = 0; /* posizione finale per la ricerca per 1 processo */
     struct timeval stop, start; /* variabili per salvare il tempo */
-    double timeTot; /* tempo totale impiegato dalla ricerca */
+    double timeTot = 0; /* tempo totale impiegato dalla ricerca */
     /* possibile soluzione POSIX-compliant
-    http://man7.org/linux/man-pages/man2/clock_gettime.2.html
-    static double TimeSpecToSeconds(struct timespec* ts)
-    {
-        return (double)ts->tv_sec + (double)ts->tv_nsec / 1000000000.0;
-    }
-    //. . . .
-    struct timespec start;
-    struct timespec end;
-    double elapsedSeconds;
-    if(clock_gettime(CLOCK_MONOTONIC, &start)) { //handle error }
-    //Do stuff
-    if(clock_gettime(CLOCK_MONOTONIC, &end)) { //handle error }
-    elapsedSeconds = TimeSpecToSeconds(&end) - TimeSpecToSeconds(&start);
+        http://man7.org/linux/man-pages/man2/clock_gettime.2.html
+        static double TimeSpecToSeconds(struct timespec* ts)
+        {
+            return (double)ts->tv_sec + (double)ts->tv_nsec / 1000000000.0;
+        }
+        //. . . .
+        struct timespec start;
+        struct timespec end;
+        double elapsedSeconds;
+        if(clock_gettime(CLOCK_MONOTONIC, &start)) { //handle error }
+        //Do stuff
+        if(clock_gettime(CLOCK_MONOTONIC, &end)) { //handle error }
+        elapsedSeconds = TimeSpecToSeconds(&end) - TimeSpecToSeconds(&start);
     */
 
-	//- - - - - - - - - - - - RICHIESTE DATI UTENTE - - - - - - - - - - - - - //
+	//- - - - - - - - - - - - RICHIEDE DATI ALL'UTENTE - - - - - - - - - - - -//
+    //chiede se si vuole automatizzare e la quantita' in caso affermativo
     //crea un vettore di dimensioni scelte dall'utente
     printf(ANSI_BLUE "Inserisci la dimensione dell'array:\n" ANSI_RESET);
     getLimitInt(&maxElem, 1, INT_MAX);
@@ -157,7 +158,7 @@ int main(int argc, char** argv) {
 	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 +
 			  (double)(stop.tv_sec - start.tv_sec);
 	//stampa il tempo totale impiegato
-	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %f [s]\n\n"
+	printf(ANSI_GREEN "Tempo totale impiegato da %d processi = %.3f [ms]\n\n"
 		   ANSI_RESET, nProc, timeTot);
 
     //- - - - - - - - - - - RICERCA SINGOLO PROCESSO - - - - - - - - - - - - -//
@@ -173,7 +174,8 @@ int main(int argc, char** argv) {
 	timeTot = (double)(stop.tv_usec - start.tv_usec) / 1000000 +
 			  (double)(stop.tv_sec - start.tv_sec);
 	//stampa il tempo totale impiegato
-	printf(ANSI_GREEN "Tempo totale impiegato dal singolo processo = %f [s]\n\n"
+	printf(ANSI_GREEN
+           "Tempo totale impiegato dal singolo processo = %.3f [ms]\n\n"
 		   ANSI_RESET, timeTot);
 
     //TODO export17445516112018.csv --> export 17:44:55 16/11/2018

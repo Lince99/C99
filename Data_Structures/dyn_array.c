@@ -3,5 +3,5 @@
  * 4^AI
  */
 /*
- * Programma ddi test della libreria dedicata agli array dinamici
+ * Programma di test della libreria dedicata agli array dinamici
  */

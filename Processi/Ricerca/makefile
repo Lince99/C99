@@ -1,8 +1,9 @@
-CC=gcc
-RM=rm -f
+CC = gcc
+RM = rm -f
 
-SRC=multi_search.c
-EXC=multi_search
+SRC = multi_auto_search.c
+EXC = multi_auto_search
+EXP_EXT = .csv
 
 all: compile run
 
@@ -11,8 +12,9 @@ compile:
 
 clean:
 	reset
-	#ls -la --color
 	$(RM) $(EXC)
+	$(RM) *$(EXP_EXT)
+	#$(RM) exports/*$(EXP_EXT)
 
 run:
 	./$(EXC)
