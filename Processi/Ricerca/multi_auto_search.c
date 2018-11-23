@@ -17,9 +17,9 @@
 #include <sys/wait.h> //wait
 #include <sys/types.h> //pid_t
 #include <sys/time.h> //gettimeofday
-#include "lib/input_check.h" //valid input
-#include "lib/manager_array.h" //newArr, initRandom
-#include "lib/manager_file.h" //saveToFile, printFile
+#include "./lib/input_check.h" //valid input
+#include "./lib/manager_array.h" //newArr, initRandom
+#include "./lib/manager_file.h" //saveToFile, printFile
 
 //numero massimo utilizzabile come input durante l'esecuzione
 #define MAXTEST 1000
