@@ -106,7 +106,7 @@ void print_lNode_int(lNode* head) {
 	while(head != NULL) {
         printf("in 3 print\n");
         //hope that it contains an integer
-        val = *(int*)head->value;
+        val = *(int*)(head->value);
 		printf("%d", val);
         //print commas while it's the last node
 		if(head->next != NULL)

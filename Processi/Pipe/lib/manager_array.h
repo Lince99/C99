@@ -84,8 +84,8 @@ int* initRand(int* arr, int min, int max, int dim) {
     srand((unsigned) time(NULL));
 
     if( !(arr = (int*) malloc(sizeof(int)*dim)) ) {
-        printf(ANSI_RED "Spazio Insufficiente per allocare l'array!\n"
-               ANSI_RESET);
+        printf(ANSI_RED "Spazio Insufficiente per allocare l'array!"
+               ANSI_RESET "\n");
         return NULL;
     }
     //ad ogni elemento viene assegnato un numero random in base al tempo
@@ -112,8 +112,8 @@ int* initExcludeRand(int* arr, int dim, int min, int max, int exc) {
     srand((unsigned) time(NULL));
 
     if( !(arr = (int*) malloc(sizeof(int)*dim)) ) {
-        printf(ANSI_RED "Spazio Insufficiente per allocare l'array!\n"
-               ANSI_RESET);
+        printf(ANSI_RED "Spazio Insufficiente per allocare l'array!"
+               ANSI_RESET "\n");
         return NULL;
     }
     //ad ogni elemento viene assegnato un numero random in base al tempo
@@ -337,8 +337,8 @@ int searchPrintElem(int* arr, int start, int end, int x) {
 		for(; start < end; start++) {
             //POTREBBE DARE SEGMENTATION FAULT! TODO risolvere
 			if(*(arr+start) == x) {
-                printf(ANSI_GREEN "Elemento %d trovato in posizione %d\n"
-                       ANSI_RESET, x, start);
+                printf(ANSI_GREEN "Elemento %d trovato in posizione %d"
+                       ANSI_RESET "\n", x, start);
 				found = 1;
 			}
 		}
@@ -356,14 +356,17 @@ int searchPrintElem(int* arr, int start, int end, int x) {
 /*
  * scambio dei valori contenuti nei due puntatori
  */
-/*
+/*TODO
 void excg(void* a, void* b) {
     void* tmp;
 
-    //TODO
-    *tmp = *a;
-    *a = *b;
-    *b = *tmp;
+    if(sizeof(a) == sizeof(b)) {
+        tmp = (void*) malloc(sizeof(a));
+        tmp = &a;
+        a = &b;
+        b = &tmp;
+    }
+
 }*/
 
 /*
@@ -399,9 +402,9 @@ void printArr(int* arr, int dim) {
 		if(i < dim-1) {
 			printf(", ");
 		}
-		//all'ultimo valore va a capo
+		//all'ultimo valore stampa un punto
 		else {
-			printf(".\n");
+			printf(".");
 		}
 	}
 }
