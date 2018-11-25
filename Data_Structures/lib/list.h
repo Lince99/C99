@@ -21,32 +21,34 @@
 
 
 
-//linked list
-typedef struct LNODE lNode;
 
-struct LNODE {
-	void* value;
-	lNode* next;
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+/* - - - - - - - - - - - - - INT LINKED LIST - - - - - - - - - - - - - - - - -*/
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+//required use of pointer
+typedef struct listNODE listNode;
+
+//this single-way linked list accept only intgers (or chars) as value
+struct listNODE {
+    int value;
+    listNode* next;
 };
 
 /*
- * initialize a new node and return its pointer
+ * function that alloc and initialize the node of the list
  */
-lNode* init_lNode(void* val) {
-    lNode* node = NULL;
+listNode* init_list(int n) {
+    listNode* node = NULL; /* the new node of the list */
 
     //alloc the new node
-    if( ( node = (lNode*) malloc(sizeof(lNode)) ) == NULL) {
+    if( ( node = (listNode*) malloc(sizeof(listNode)) ) == NULL) {
             printf(ANSI_RED "Error on allocating new list node!\n"
                    ANSI_RESET);
             return NULL;
     }
-    //and assign values to the content of the node
-    printf("alloching\n");
-    node->value = malloc(sizeof(val));
-    node->value = val;
+    //and assign the arg value to the content of the node
+    node->value = n;
     node->next = NULL;
-    printf("alloching end\n");
 
     //return the new allocated node
     return node;
@@ -55,28 +57,152 @@ lNode* init_lNode(void* val) {
 /*
  * function that add an element at the tail of the linked list
  */
-void addTail_lNode(lNode* node, void* val) {
-    lNode* new = NULL;
+listNode* addTail_list(listNode* node, int n) {
+    listNode* new = NULL;
 
     //allocate the new node
-    new = init_lNode(val);
-    //it goes to the tail of the list
-    while(node != NULL) {
+    new = init_list(n);
+    //check if there is an old node to attach else "new" is the new node
+    if(node == NULL)
+        return new;
+    //the new node goes to the tail of the list
+    while(node->next != NULL)
         node = node->next;
-    }
     //assign the pointer of the new node to the link of the old tail
-    if(node != NULL)
-        node->next = new;
+    node->next = new;
 }
 
 /*
  * function that create a new head for the list
  */
-lNode* addHead_lNode(lNode* head, void* val) {
-    lNode* new = NULL;
+listNode* addHead_list(listNode* head, int n) {
+    listNode* new = NULL;
 
     //allocate the new node
-    new = init_lNode(val);
+    new = init_list(n);
+    //if the head wasn't initialized before, new is the new list
+    if(head == NULL)
+        return new;
+
+    if(head != NULL) {
+        //link the new node to the next node of the old head
+        new->next = head->next;
+        //free the old head, not returning or other things
+        free(head);
+    }
+    //the new node is the new head
+    head = new;
+
+    return new;
+}
+
+/*
+ * function that print all integer elements in the list
+ */
+void print_list(listNode* head) {
+
+	//check if it's empty
+	if(head == NULL) {
+		printf(ANSI_RED "Empty list!" ANSI_RESET"\n");
+		return;
+	}
+
+	//otherwise print in a formatted manner
+	printf(ANSI_GREEN);
+	while(head != NULL) {
+		printf("%d", head->value);
+        //print commas until the last point
+		if(head->next != NULL)
+			printf(", ");
+		else
+			printf(".\n");
+		head = head->next;
+	}
+	printf(ANSI_RESET);
+
+}
+
+/*
+ * function that free the list from the head
+ */
+listNode* free_list(listNode* head) {
+    listNode* tmp = NULL; /* temp node for saving the next node on freeing */
+
+    //scoll the list
+    while(head != NULL) {
+        tmp = head;
+        //free the current node
+        free(head);
+        //and continue to the next
+        head = head->next;
+        tmp->next = NULL;
+    }
+
+    return head;
+}
+
+
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+/* - - - - - - - - - - - - VOID* LINKED LIST - - - - - - - - - - - - - - - - -*/
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+typedef struct voidNODE voidNode;
+
+//generic type (void*) list
+struct voidNODE {
+	void* value;
+	voidNode* next;
+};
+
+/*
+ * initialize a new node and return its pointer
+ */
+voidNode* init_voidNode(void* val) {
+    voidNode* node = NULL; /* the new head of the list */
+
+    //alloc the new node
+    if( ( node = (voidNode*) malloc(sizeof(voidNode)) ) == NULL) {
+            printf(ANSI_RED "Error on allocating new list node!"
+                   ANSI_RESET "\n");
+            return NULL;
+    }
+    //and assign values to the content of the node
+    node->value = malloc(sizeof(val));
+    node->value = val;
+    node->next = NULL;
+
+    //return the new allocated node
+    return node;
+}
+
+/*
+ * function that add an element at the tail of the linked list
+ */
+void addTail_voidNode(voidNode* node, void* val) {
+    voidNode* new = NULL;
+
+    //allocate the new node
+    new = init_voidNode(val);
+    //check if there is an old node to attach, if not "new" is the new node
+    if(node == NULL) {
+        node = new;
+        return;
+    }
+    //the new node goes to the tail of the list
+    while(node->next != NULL)
+        node = node->next;
+    //assign the pointer of the new node to the link of the old tail
+    node->next = new;
+}
+
+/*
+ * function that create a new head for the list
+ */
+voidNode* addHead_voidNode(voidNode* head, void* val) {
+    voidNode* new = NULL;
+
+    //allocate the new node
+    new = init_voidNode(val);
     if(head != NULL) {
         //link the new node to the next node of the old head
         new->next = head->next;
@@ -90,21 +216,18 @@ lNode* addHead_lNode(lNode* head, void* val) {
 /*
  * function that print all integer elements on "head" list
  */
-void print_lNode_int(lNode* head) {
+void print_voidNode_int(voidNode* head) {
     int val = 0;
 
-    //printf("in print\n");
 	//check if it's empty
 	if(head == NULL) {
-		printf(ANSI_RED "Empty list!\n" ANSI_RESET);
+		printf(ANSI_RED "Empty list!" ANSI_RESET "\n");
 		return;
 	}
 
-    printf("in 2 print\n");
 	//otherwise print in a formatted manner
 	printf(ANSI_GREEN);
 	while(head != NULL) {
-        printf("in 3 print\n");
         //hope that it contains an integer
         val = *(int*)(head->value);
 		printf("%d", val);
@@ -116,5 +239,21 @@ void print_lNode_int(lNode* head) {
 		head = head->next;
 	}
 	printf(ANSI_RESET);
+
+}
+
+/*
+ * function that free the list from the head
+ */
+int free_voidNodes(voidNode* head) {
+    voidNode* tmp = NULL; /* temp node for saving the next node on freeing */
+    //scoll the list
+    while(head != NULL) {
+        //free the current node
+        tmp = head;
+        free(head);
+        //and continue to the next
+        head = tmp->next;
+    }
 
 }

@@ -11,28 +11,93 @@
 #include "lib/colors.h"
 #include "lib/input_check.h"
 
-int main() {
-    lNode* head = NULL;
-    int* n = NULL;
+//firme delle prove
+void testLinkedList();
+void testVoidList();
 
-    n = (int*)malloc(sizeof(int));
-    *n = 2;
+int main() {
+
+    testLinkedList();
+    //testVoidList();
+
+    return 0;
+}
+
+
+
+//simple tests with integers saved on a linked list
+void testLinkedList() {
+    int a = 0;
+    int i = 0;
+    listNode* list = NULL;
+
+    printf(ANSI_BLUE "Inserisci un valore:" ANSI_RESET"\n");
+    getInt(&a);
+
+    print_list(list);
+    //list = init_list(a);
+    list = addTail_list(list, a);
+    print_list(list);
+    addTail_list(list, ++a);
+    print_list(list);
+    addTail_list(list, a++);
+    print_list(list);
+    for(i = 0; i < a; i++) {
+        addTail_list(list, i);
+        print_list(list);
+    }
+    list = addHead_list(list, a*2);
+    print_list(list);
+    list = free_list(list);
+    print_list(list);
+
+}
+
+
+
+//test void* linked list
+void testVoidList() {
     //HHEEEEEEELLLLLLLLLLL
-    /*void* test = NULL;
+    /*
+    void* test = NULL;
+    int* n = NULL;
     test = malloc(sizeof(int));
 
 
     *(int*)test = *n;
     printf("test = %d\n", *(int*)test);
-    free(test);*/
+    free(test);
+    */
     //END HHEEEEEEELLLLLLLLLLL
 
-    head = init_lNode(n);
+    voidNode* head = NULL;
+    int* n = NULL;
 
-    *n += 1;
-    addTail_lNode(head, n);
+    n = (int*)malloc(sizeof(int));
+    *n = 2;
 
-    print_lNode_int(head);
+    head = init_voidNode(n);
+    *n += 10;
+    addTail_voidNode(head, n);
+    *n += 12;
+    addTail_voidNode(head, n);
+    print_voidNode_int(head);
 
-    return 0;
+    //test 2
+    free_voidNodes(head);
+    voidNode* bob = NULL;
+    *n += 12;
+    bob = init_voidNode(n);
+    *n += 2;
+    addTail_voidNode(bob, n);
+    addTail_voidNode(bob, n);
+    addTail_voidNode(bob, n);
+    head = init_voidNode(bob);
+
+    printf(ANSI_YELLOW "Bob\t");
+    print_voidNode_int(bob);
+    printf(ANSI_BLUE "head->value\t");
+    print_voidNode_int(head->value); //<-- OMG
+    printf(ANSI_RED "head\t");
+    print_voidNode_int(head);
 }

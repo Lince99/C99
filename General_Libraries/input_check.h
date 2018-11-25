@@ -121,15 +121,16 @@ int getString(char** str) {
     do {
         printf(ANSI_GREEN "-->\t" ANSI_RESET);
         *str = fgets(*str, MAX_CHAR, stdin);
+	//se str contiene solo l'invio (lung = 1) allora l'input non e' valido
         lung = strlen(*str);
         //pulisce l'invio finale
-        if (lung && (*(*str+lung-1) == '\n'))
+        if (lung > 1 && (*(*str+lung-1) == '\n'))
             *(*str+lung-1) = '\0';
         //e richiede l'input nel caso la stringa non sia valida
-        if(*str == NULL || !lung)
+        if(*str == NULL || lung == 1)
             printf(ANSI_RED "Stringa non valida! Re-inseriscila"
                    ANSI_RESET "\n");
-    } while(*str == NULL || !lung);
+    } while(*str == NULL || lung == 1);
 
     return strlen(*str);
 }
