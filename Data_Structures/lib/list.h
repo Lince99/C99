@@ -23,7 +23,7 @@
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-/* - - - - - - - - - - - - - INT LINKED LIST - - - - - - - - - - - - - - - - -*/
+/* - - - - - - - - - - - - INTEGER LINKED LIST - - - - - - - - - - - - - - - -*/
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 //required use of pointer
 typedef struct listNODE listNode;
@@ -41,7 +41,8 @@ listNode* init_list(int n) {
     listNode* node = NULL; /* the new node of the list */
 
     //alloc the new node
-    if( ( node = (listNode*) malloc(sizeof(listNode)) ) == NULL) {
+    node = (listNode*) malloc(sizeof(listNode));
+    if(node == NULL) {
             printf(ANSI_RED "Error on allocating new list node!\n"
                    ANSI_RESET);
             return NULL;
@@ -90,10 +91,22 @@ listNode* addHead_list(listNode* head, int n) {
         //free the old head, not returning or other things
         free(head);
     }
-    //the new node is the new head
-    head = new;
 
+    //the new node is the new head
     return new;
+}
+
+/*
+ * recursive function that return the length of the list
+ */
+int length_list(listNode* node) {
+    //WIP (node == NULL) ? return 0 : return length_list(node->next)+1;
+    //if it has reached the end of list, start the recursion
+    if(node == NULL)
+        return 0;
+    //else increase the counter
+    else
+        return length_list(node->next)+1;
 }
 
 /*
@@ -112,14 +125,47 @@ void print_list(listNode* head) {
 	while(head != NULL) {
 		printf("%d", head->value);
         //print commas until the last point
-		if(head->next != NULL)
-			printf(", ");
-		else
-			printf(".\n");
+        (head->next != NULL) ? printf(", ") : printf(".\n");
 		head = head->next;
 	}
 	printf(ANSI_RESET);
 
+}
+
+/*
+ * function that remove one node that has the same value of "n" in the list
+ */
+listNode* remNode_list(listNode* head, int n) {
+
+    //TODO
+
+}
+
+/*
+ * function that remove a piece of the list from start to end
+ */
+//TODO
+listNode* remSector_list(listNode* node, int start, int end) {
+    listNode* tmp = NULL; /* save the current node before the one to delete */
+    int i = 0; /* position that has to reach "start" */
+
+    //if there is no elements return immediately
+    if(node == NULL)
+        return node;
+    //check if parameters aren't valid
+    if(start > end)
+        return node;
+
+    //scoll the list until "i" reaches the node before that one has to be free
+    while(head != NULL && i < start) {
+        head = head->next;
+        tmp = head;
+        i++;
+    }
+    head->next = head->/*delete this*/next->next;
+    free(tmp->next);
+
+    return head;
 }
 
 /*

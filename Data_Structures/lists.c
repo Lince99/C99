@@ -17,8 +17,10 @@ void testVoidList();
 
 int main() {
 
+    printf(ANSI_BLUE "- - - - - - TEST LINK LIST - - - - - - " ANSI_RESET "\n");
     testLinkedList();
-    //testVoidList();
+    printf(ANSI_BLUE "- - - - - - TEST VOID* LIST - - - - - -" ANSI_RESET "\n");
+    testVoidList();
 
     return 0;
 }
