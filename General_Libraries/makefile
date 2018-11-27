@@ -5,9 +5,9 @@ CC=gcc
 RM=rm -f
 
 #name of the source (include folders if the source isn't in the current dir)
-SRC=Basso_liste.c
+SRC=REPLACE_ME.c
 #add params after the name of the executable
-EXC=Basso_liste
+EXC=REPLACE_ME
 
 all: compile run
 

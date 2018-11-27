@@ -12,6 +12,7 @@ all: compile run
 
 compile:
 	$(CC) -o $(EXC) $(SRC)
+	strip $(EXC)
 
 clean:
 	#reset
