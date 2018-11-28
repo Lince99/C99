@@ -28,10 +28,11 @@ int print_menu();
 
 
 int main(int argc, char** argv) {
-	unsigned int scelta = 0; /* valore della scelta fatta dall'utente */
+    unsigned int scelta = 0; /* valore della scelta fatta dall'utente */
     unsigned int confirm = 0; /* flag usato per confermare operazioni */
     int value = 0; /* valore inserito dall'utente utilizzato dalla lista */
     listNode* list = NULL; /* lista utilizzata dal programma */
+    listNode* found = NULL; /* nodo trovato dalla funzione di ricerca */
 
 	//introduzione
 	printf(ANSI_BG_RED "- - - - - - - - - - - - - - - - - - - - - -"
@@ -98,8 +99,9 @@ int main(int argc, char** argv) {
                 printf(ANSI_BLUE "Inserisci il valore da cercare nella lista:"
                        ANSI_RESET "\n");
                 getInt(&value);
-                //stampa dei vari risultati
-                findPrintNode_list(list, value);
+                //stampa della prima occorrenza
+                found = findNode_list(list, value);
+                printNode_list(found);
                 break;
             //elimina ultimo elemento inserito
             case 7: //TODO
@@ -121,7 +123,8 @@ int main(int argc, char** argv) {
         }
     } while(scelta != 0);
 
-	return 0;
+    free_list(list);
+    return 0;
 }
 
 /*
@@ -168,7 +171,6 @@ int print_menu() {
 
     //richiede l'opzione tra quelle presenti nel menu da eseguire
     getLimitInt(&scelta, 0, 8);
-    printf("\n");
 
     return scelta;
 }

@@ -148,9 +148,8 @@ int getString(char** str) {
     	//if the user sended only a return character, the string isn't valid
         lung = strlen(*str);
         //replace the return char with string-terminating char
-        if (lung > 1 && (*(*str+lung-1) == '\n')) {
+        if (lung > 1 && (*(*str+lung-1) == '\n'))
             *(*str+lung-1) = '\0';
-        }
         //re-ask the user input if the string is void or NULL
         if(*str == NULL || lung == 1)
             printf(ANSI_RED "Invalid string! Re-insert it"

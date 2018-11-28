@@ -133,6 +133,21 @@ void print_list(listNode* head) {
 }
 
 /*
+ * function that print only the passed node
+ */
+void printNode_list(listNode* node) {
+
+	//check if it's empty
+	if(node == NULL) {
+		printf(ANSI_RED "Nothing found!" ANSI_RESET "\n");
+		return;
+	}
+	//otherwise print in a formatted manner
+	printf(ANSI_GREEN "Value of node: %d" ANSI_RESET "\n", node->value);
+
+}
+
+/*
  * function that print all the finded elements in the list
  */
 void findPrintNode_list(listNode* head, int val) {
@@ -152,6 +167,24 @@ void findPrintNode_list(listNode* head, int val) {
 
     if(flag == 0)
         printf(ANSI_YELLOW "Nothing found!" ANSI_RESET "\n");
+}
+
+/*
+ * function that print the first occourence in the list
+ */
+listNode* findNode_list(listNode* head, int val) {
+    unsigned int pos = 0; /* counter that is used for printing the position */
+
+	//return the node if it find the val
+	while(head != NULL) {
+        if(head->value == val)
+            return head;
+		head = head->next;
+        pos++;
+	}
+
+    //if nothing found, return NULL
+    return NULL;
 }
 
 /*
