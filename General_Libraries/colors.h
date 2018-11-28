@@ -62,6 +62,10 @@ https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
 
 
 //font colors (foreground)
+#ifndef ANSI_BLACK
+    #define ANSI_BLACK     "\x1b[30m"
+#endif
+
 #ifndef ANSI_RED
     #define ANSI_RED     "\x1b[31m"
 #endif
@@ -86,9 +90,17 @@ https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
     #define ANSI_CYAN    "\x1b[36m"
 #endif
 
+#ifndef ANSI_WHITE
+    #define ANSI_WHITE     "\x1b[37m"
+#endif
+
 
 
 //background colors
+#ifndef ANSI_BG_BLACK
+    #define ANSI_BG_BLACK     "\x1b[40m"
+#endif
+
 #ifndef ANSI_BG_RED
     #define ANSI_BG_RED     "\x1b[41m"
 #endif
@@ -113,10 +125,13 @@ https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
     #define ANSI_BG_CYAN    "\x1b[46m"
 #endif
 
+#ifndef ANSI_BG_WHITE
+    #define ANSI_BG_WHITE     "\x1b[47m"
+#endif
+
 #ifndef ANSI_REVERSE
     #define ANSI_REVESE     "\x1b[7m"
 #endif
-
 
 
 //font styles
@@ -130,6 +145,10 @@ https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
 
 #ifndef ANSI_UNDERLINE
     #define ANSI_UNDERLINE    "\x1b[4m"
+#endif
+
+#ifndef ANSI_NOT_OVERLINE
+    #define ANSI_NOT_OVERLINE    "\x1b[24m"
 #endif
 
 #ifndef ANSI_OVERLINE

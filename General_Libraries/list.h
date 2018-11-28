@@ -133,6 +133,28 @@ void print_list(listNode* head) {
 }
 
 /*
+ * function that print all the finded elements in the list
+ */
+void findPrintNode_list(listNode* head, int val) {
+    unsigned int pos = 0; /* counter that is used for printing the position */
+    short int flag = 0; /* set to 1 if there is almost 1 entry in the list */
+
+	//print the position if it find the val
+	while(head != NULL) {
+        if(head->value == val) {
+    	    printf(ANSI_GREEN "Found value %d on %d position"
+                   ANSI_RESET "\n", head->value, pos);
+            flag = 1;
+        }
+		head = head->next;
+        pos++;
+	}
+
+    if(flag == 0)
+        printf(ANSI_YELLOW "Nothing found!" ANSI_RESET "\n");
+}
+
+/*
  * function that remove one node that has the same value of "n" in the list
  */
 //TODO
@@ -146,16 +168,16 @@ listNode* remNode_list(listNode* head, int n) {
  * function that remove a piece of the list from start to end
  */
 //TODO
-listNode* remSector_list(listNode* node, int start, int end) {
+listNode* remSector_list(listNode* head, int start, int end) {
     listNode* tmp = NULL; /* save the current node before the one to delete */
     int i = 0; /* position that has to reach "start" */
 
     //if there is no elements return immediately
-    if(node == NULL)
-        return node;
+    if(head == NULL)
+        return head;
     //check if parameters aren't valid
     if(start > end)
-        return node;
+        return head;
 
     //scoll the list until "i" reaches the node before that one has to be free
     while(head != NULL && i < start) {

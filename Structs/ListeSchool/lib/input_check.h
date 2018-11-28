@@ -62,7 +62,7 @@ void getLimitInt(int* x, int min, int max) {
         getInt(x);
         if(*x < min || *x > max)
             printf(ANSI_RED "Invalid number!"
-                   ANSI_YELLOW "(It has to be from %d to %d)"
+                   ANSI_YELLOW " (It has to be from %d to %d)"
                    ANSI_RESET "\n", min, max);
     } while(*x < min || *x > max);
 
