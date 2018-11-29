@@ -76,8 +76,13 @@ int main(int argc, char** argv) {
             //lunghezza della lista
             case 3:
                 //stampa della lunghezza
-                printf(ANSI_GREEN "La lista ha una lunghezza di %d elementi"
-                       ANSI_RESET "\n", length_list(list));
+                value = length_list(list);
+                if(value)
+                    printf(ANSI_GREEN "La lista ha una lunghezza di %d elementi"
+                           ANSI_RESET "\n", value);
+                else
+                    printf(ANSI_YELLOW "La lista ha lunghezza 0!"
+                           ANSI_RESET "\n");
                 break;
             //controllo se e' vuota
             case 4:
@@ -100,21 +105,51 @@ int main(int argc, char** argv) {
                        ANSI_RESET "\n");
                 getInt(&value);
                 //stampa della prima occorrenza
-                found = findNode_list(list, value);
-                printNode_list(found);
+                findPrintNode_list(list, value);
                 break;
             //elimina ultimo elemento inserito
-            case 7: //TODO
-                //stampa dati ultimo elemento
+            case 7:
+                //se la lista e' vuota non esegue nulla
+                if(list == NULL) {
+                    printf(ANSI_RED "Lista vuota!\n"
+                           "Impossibile eliminare elementi!" ANSI_RESET "\n");
+                    break;
+                }
+                //stampa dati ultimo elemento se presente
+                printNode_list(getNode_list(list, length_list(list)-1) );
                 //richiesta conferma
-                //eliminazione elemento
+                printf(ANSI_BLUE
+                       "Siete sicuri di voler eleminare questo elemento?\n"
+                       ANSI_CYAN "[0 = no, 1 = si]" ANSI_RESET "\n");
+                getLimitInt(&confirm, 0, 1);
+                //eliminazione elemento se confermato
+                if(confirm)
+                    list = remNode_list(list, length_list(list)-1);
                 break;
             //elimina alcuni degli ultimi elementi inseriti
             case 8: //TODO
                 //richiesta quanti elementi
+                printf(ANSI_BLUE
+                       "Quanti degli ultimi elementi volete eliminare?\n"
+                       ANSI_CYAN "[da 0 a %d]"
+                       ANSI_RESET "\n", length_list(list));
+                //controllo sul valore inserito
+                getLimitInt(&value, 0, length_list(list));
                 //stampa di n ultimi elementi
+                print_list((found = getNode_list(list, length_list(list)-value)));
                 //richiesta conferma
-                //eliminazione elementi
+                printf(ANSI_BLUE
+                       "Siete sicuri di voler eleminare questi elementi?\n"
+                       ANSI_CYAN "[0 = no, 1 = si]" ANSI_RESET "\n");
+                getLimitInt(&confirm, 0, 1);
+                //eliminazione elementi se confermato
+                if(confirm) {
+                    //se ha deciso di eliminare tutto allora porta a NULL
+                    if(value == length_list(list))
+                        list = NULL;
+                    //libera da lunghezza - punto di partenza di eliminazione
+                    free_list(found);
+                }
                 break;
             //in caso sia 0 uscita dal programma
             default:
