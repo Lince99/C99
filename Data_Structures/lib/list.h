@@ -59,8 +59,10 @@ listNode* init_list(int n) {
  * function that add an element at the tail of the linked list
  */
 listNode* addTail_list(listNode* node, int n) {
-    listNode* new = NULL;
+    listNode* new = NULL; /* the new node will be stored here */
+    listNode* start = NULL; /* start node that is useful for void lists*/
 
+    start = node;
     //allocate the new node
     new = init_list(n);
     //check if there is an old node to attach else "new" is the new node
@@ -71,6 +73,9 @@ listNode* addTail_list(listNode* node, int n) {
         node = node->next;
     //assign the pointer of the new node to the link of the old tail
     node->next = new;
+
+    //return the head of the list
+    return start;
 }
 
 /*
@@ -84,13 +89,8 @@ listNode* addHead_list(listNode* head, int n) {
     //if the head wasn't initialized before, new is the new list
     if(head == NULL)
         return new;
-
-    if(head != NULL) {
-        //link the new node to the next node of the old head
-        new->next = head->next;
-        //free the old head, not returning or other things
-        free(head);
-    }
+    //link the new node to the next node of the old head
+    new->next = head;
 
     //the new node is the new head
     return new;
@@ -133,29 +133,131 @@ void print_list(listNode* head) {
 }
 
 /*
- * function that remove one node that has the same value of "n" in the list
+ * function that print only the passed node
  */
-//TODO
+void printNode_list(listNode* node) {
+
+	//check if it's empty
+	if(node == NULL) {
+		printf(ANSI_RED "Nothing found!" ANSI_RESET "\n");
+		return;
+	}
+	//otherwise print in a formatted manner
+	printf(ANSI_GREEN "Value of this node: %d" ANSI_RESET "\n", node->value);
+
+}
+
+/*
+ * function that print all finded elements in the list
+ */
+void findPrintNode_list(listNode* head, int val) {
+    unsigned int pos = 0; /* counter that is used for printing the position */
+    short int flag = 0; /* set to 1 if there is almost 1 entry in the list */
+
+	//print the position if it find the val
+	while(head != NULL) {
+        if(head->value == val) {
+    	    printf(ANSI_GREEN "Found value %d on position %d"
+                   ANSI_RESET "\n", head->value, pos+1);
+            flag = 1;
+        }
+		head = head->next;
+        pos++;
+	}
+
+    if(flag == 0)
+        printf(ANSI_YELLOW "Nothing found!" ANSI_RESET "\n");
+}
+
+/*
+ * function that print the first occourence in the list
+ */
+listNode* findNode_list(listNode* head, int val) {
+    unsigned int pos = 0; /* counter that is used for printing the position */
+
+	//return the node if it find the val
+	while(head != NULL) {
+        if(head->value == val)
+            return head;
+		head = head->next;
+        pos++;
+	}
+
+    //if nothing found, return NULL
+    return NULL;
+}
+
+/*
+ * function that return the node in the position passed as argument
+ */
+listNode* getNode_list(listNode* head, int pos) {
+    unsigned int i = 0; /* counter that is used for finding the position */
+
+    //if the length is wrong exit
+    if(pos > length_list(head) || pos < 0) {
+        printf(ANSI_RED "Wrong length required!");
+        return head;
+    }
+    //goes to the "pos" position of the list
+	while(head != NULL && i < pos) {
+        head = head->next;
+        i++;
+    }
+
+    return head;
+}
+
+/*
+ * function that remove one node that has the position of "n" in the list
+ */
 listNode* remNode_list(listNode* head, int n) {
+    listNode* tmp = NULL; /* save the current node before the one to delete */
+    listNode* start = NULL; /* save the start of the list in case of n = 0 */
+    unsigned int pos = 0; /* counter that is used for counting the position */
 
+    start = head;
+    //if the length is wrong exit
+    if(head == NULL || n < 0 || n > length_list(head)) {
+        printf(ANSI_RED "Wrong length!" ANSI_RESET "\n");
+        return head;
+    }
+    //if it has only 1 node delete it and return an empty list
+    if(head->next == NULL) {
+        free(head);
+        return NULL;
+    }
+    //goes to the node before the "n" node
+    while(head != NULL && pos < n-1) {
+        printf("pos = %d n = %d - 1\n", pos, n);
+        head = head->next;
+        pos++;
+    }
+    //save the n-1 position
+    tmp = head;
+    //goes to the n position that has to be free
+    head = head->next;
+    //link the n-1 node with n+1 node
+    tmp->next = tmp->next->next;
+    //free the n node
+    free(head);
 
-
+    return start;
 }
 
 /*
  * function that remove a piece of the list from start to end
  */
-//TODO
-listNode* remSector_list(listNode* node, int start, int end) {
-    listNode* tmp = NULL; /* save the current node before the one to delete */
-    int i = 0; /* position that has to reach "start" */
+/*TODO
+listNode* remSector_list(listNode* head, int start, int end) {
+    listNode* tmp = NULL; // save the current node before the one to delete
+    int i = 0; // position that has to reach "start"
 
     //if there is no elements return immediately
-    if(node == NULL)
-        return node;
+    if(head == NULL)
+        return NULL;
     //check if parameters aren't valid
     if(start > end)
-        return node;
+        return head;
 
     //scoll the list until "i" reaches the node before that one has to be free
     while(head != NULL && i < start) {
@@ -163,11 +265,11 @@ listNode* remSector_list(listNode* node, int start, int end) {
         tmp = head;
         i++;
     }
-    head->next = head->/*delete this*/next->next;
+    head->next = head->//delete this//next->next;
     free(tmp->next);
 
     return head;
-}
+}*/
 
 /*
  * function that free the list from the head

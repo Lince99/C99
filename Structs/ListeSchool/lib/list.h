@@ -11,7 +11,21 @@
 #include <stdlib.h>
 #include "colors.h"
 
+//signatures
 //linked list
+typedef struct listNODE listNode; //integer list and possible operations
+listNode* init_list(int n);
+listNode* addTail_list(listNode* node, int n);
+listNode* addHead_list(listNode* head, int n);
+int length_list(listNode* node);
+void print_list(listNode* head);
+void rec_print_list(listNode* node);
+void printNode_list(listNode* node);
+void findPrintNode_list(listNode* head, int val);
+listNode* findNode_list(listNode* head, int val);
+listNode* getNode_list(listNode* head, int pos);
+listNode* remNode_list(listNode* head, int n);
+listNode* free_list(listNode* head);
 //LIFO
 //FIFO
 
@@ -100,7 +114,6 @@ listNode* addHead_list(listNode* head, int n) {
  * recursive function that return the length of the list
  */
 int length_list(listNode* node) {
-    //WIP (node == NULL) ? return 0 : return length_list(node->next)+1;
     //if it has reached the end of list, start the recursion
     if(node == NULL)
         return 0;
@@ -133,13 +146,29 @@ void print_list(listNode* head) {
 }
 
 /*
+ * function that print in a recursive way
+ */
+void rec_print_list(listNode* node) {
+
+    //if the list is void print "end", same if contains something
+    if(node == NULL)
+        printf(ANSI_RED "End" ANSI_RESET "\n");
+    else {
+        printf(ANSI_GREEN "%d ", node->value);
+        //pass to the next node with recursion
+        print_list(node->next);
+    }
+
+}
+
+/*
  * function that print only the passed node
  */
 void printNode_list(listNode* node) {
 
 	//check if it's empty
 	if(node == NULL) {
-		printf(ANSI_RED "Nothing found!" ANSI_RESET "\n");
+		printf(ANSI_RED " End!" ANSI_RESET "\n");
 		return;
 	}
 	//otherwise print in a formatted manner
@@ -148,7 +177,7 @@ void printNode_list(listNode* node) {
 }
 
 /*
- * function that print all finded elements in the list
+ * function that print all found elements in the list
  */
 void findPrintNode_list(listNode* head, int val) {
     unsigned int pos = 0; /* counter that is used for printing the position */
@@ -295,22 +324,22 @@ listNode* free_list(listNode* head) {
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 /* - - - - - - - - - - - - VOID* LINKED LIST - - - - - - - - - - - - - - - - -*/
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-typedef struct voidNODE voidNode;
+typedef struct voidList voidList;
 
 //generic type (void*) list
-struct voidNODE {
+struct voidList {
 	void* value;
-	voidNode* next;
+	voidList* next;
 };
 
 /*
  * initialize a new node and return its pointer
  */
-voidNode* init_voidNode(void* val) {
-    voidNode* node = NULL; /* the new head of the list */
+voidList* init_voidList(void* val) {
+    voidList* node = NULL; /* the new head of the list */
 
     //alloc the new node
-    if( ( node = (voidNode*) malloc(sizeof(voidNode)) ) == NULL) {
+    if( ( node = (voidList*) malloc(sizeof(voidList)) ) == NULL) {
             printf(ANSI_RED "Error on allocating new list node!"
                    ANSI_RESET "\n");
             return NULL;
@@ -327,11 +356,11 @@ voidNode* init_voidNode(void* val) {
 /*
  * function that add an element at the tail of the linked list
  */
-void addTail_voidNode(voidNode* node, void* val) {
-    voidNode* new = NULL;
+void addTail_voidList(voidList* node, void* val) {
+    voidList* new = NULL;
 
     //allocate the new node
-    new = init_voidNode(val);
+    new = init_voidList(val);
     //check if there is an old node to attach, if not "new" is the new node
     if(node == NULL) {
         node = new;
@@ -347,11 +376,11 @@ void addTail_voidNode(voidNode* node, void* val) {
 /*
  * function that create a new head for the list
  */
-voidNode* addHead_voidNode(voidNode* head, void* val) {
-    voidNode* new = NULL;
+voidList* addHead_voidList(voidList* head, void* val) {
+    voidList* new = NULL;
 
     //allocate the new node
-    new = init_voidNode(val);
+    new = init_voidList(val);
     if(head != NULL) {
         //link the new node to the next node of the old head
         new->next = head->next;
@@ -365,7 +394,7 @@ voidNode* addHead_voidNode(voidNode* head, void* val) {
 /*
  * function that print all integer elements on "head" list
  */
-void print_voidNode_int(voidNode* head) {
+void print_voidList_int(voidList* head) {
     int val = 0;
 
 	//check if it's empty
@@ -394,8 +423,8 @@ void print_voidNode_int(voidNode* head) {
 /*
  * function that free the list from the head
  */
-int free_voidNodes(voidNode* head) {
-    voidNode* tmp = NULL; /* temp node for saving the next node on freeing */
+int free_voidList(voidList* head) {
+    voidList* tmp = NULL; /* temp node for saving the next node on freeing */
     //scoll the list
     while(head != NULL) {
         //free the current node

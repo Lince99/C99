@@ -143,7 +143,7 @@ int getString(char** str) {
     }
     //control the string, if it isn't ok, re-ask the input from stdin
     do {
-        printf(ANSI_GREEN "-->\t" ANSI_RESET);
+        printf(ANSI_GREEN "-->" ANSI_RESET "\t");
         *str = fgets(*str, MAX_CHAR, stdin);
     	//if the user sended only a return character, the string isn't valid
         lung = strlen(*str);
