@@ -8,8 +8,6 @@
 
 #include <stdio.h>
 #include "lib/list.h"
-#include "lib/colors.h"
-#include "lib/input_check.h"
 
 //firme delle prove
 void testLinkedList();
@@ -86,7 +84,7 @@ void testVoidList() {
     print_voidNode_int(head);
 
     //test 2
-    free_voidNodes(head);
+    free_voidNode(head);
     voidNode* bob = NULL;
     *n += 12;
     bob = init_voidNode(n);
