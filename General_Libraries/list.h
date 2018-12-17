@@ -3,7 +3,7 @@
  * 4^AI
  */
 /*
- * dedicated library that gives to you the power of the dynamic lists
+ * dedicated library that gives to you the power of the dynamic linked lists
  */
 
 
@@ -12,13 +12,6 @@
 #include "colors.h"
 
 //linked list
-//LIFO
-//FIFO
-
-//double-linked list
-//ordered list
-//matrix list
-
 
 
 

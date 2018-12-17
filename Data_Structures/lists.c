@@ -7,7 +7,10 @@
  */
 
 #include <stdio.h>
-#include "lib/list.h"
+#include "lib/lists/intList.h"
+#include "lib/lists/circList.h"
+#include "lib/lists/bidirList.h"
+#include "lib/lists/voidList.h"
 
 //firme delle prove
 void testLinkedList();
