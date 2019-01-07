@@ -10,6 +10,7 @@
 #include <stdlib.h> //atoi, malloc
 #include <string.h> //strlen
 #include <limits.h> //INT_MAX
+#include <time.h> //srand
 #include "colors.h" //printf colors
 
 //max number of char per string
@@ -19,6 +20,7 @@
 
 //signatures
 void getInt(int* x);
+int getRandInt(int* x, int min, int max);
 void getLimitInt(int* x, int min, int max);
 void getFloat(float *x);
 int checkNumber(char* str, size_t dim);
@@ -49,6 +51,21 @@ void getInt(int* x) {
     } while(!valid);
 
     free(str);
+}
+
+/*
+ * function that use a minimum and maximum value for generating
+ * 1 random number based on time seed, and return the value
+ */
+int getRandInt(int* x, int min, int max) {
+    srand((unsigned) time(NULL));
+
+    if(x == NULL)
+        x = (int*) malloc(sizeof(int));
+    //assign the random number to the value of the var x
+    *x = min + (int)(rand()%max);
+
+    return *x;
 }
 
 /*
@@ -143,7 +160,7 @@ int getString(char** str) {
     }
     //control the string, if it isn't ok, re-ask the input from stdin
     do {
-        printf(ANSI_GREEN "-->\t" ANSI_RESET);
+        printf(ANSI_GREEN "-->" ANSI_RESET "\t");
         *str = fgets(*str, MAX_CHAR, stdin);
     	//if the user sended only a return character, the string isn't valid
         lung = strlen(*str);

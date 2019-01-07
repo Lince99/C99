@@ -1,20 +1,11 @@
 /*
-* Basso Nicola
-* 4^AI
-* 23/10/2017
-*/
+ * Basso Nicola
+ * 4^AI
+ * 05/01/2019
+ */
 
-//test di strutture dinamiche : coda LIFO
+/* test di strutture dinamiche : coda LIFO */
 
-/
-4
-14
-314
-1314
-131
-13
-1
-*/
 
 
 #include <stdio.h>

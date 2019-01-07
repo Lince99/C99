@@ -88,11 +88,10 @@ listNode* addHead_list(listNode* head, int n) {
 
     //allocate the new node
     new = init_list(n);
-    //if the head wasn't initialized before, new is the new list
-    if(head == NULL)
-        return new;
-    //link the new node to the next node of the old head
-    new->next = head;
+    //if the head has been initialized before
+    if(head != NULL)
+        //link the new node to the next node of the old head
+        new->next = head;
 
     //the new node is the new head
     return new;

@@ -1,10 +1,10 @@
 /*
-* Basso Nicola
-* 4^AI
-* 23/10/2017
-*/
+ * Basso Nicola
+ * 4^AI
+ * 05/01/2019
+ */
 
-//test di strutture dinamiche : coda FIFO
+/* test di strutture dinamiche : coda FIFO */
 
 
 #include <stdio.h>
