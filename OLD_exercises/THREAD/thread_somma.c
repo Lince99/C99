@@ -13,11 +13,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void*
-somma(void* var);
+void* somma(void* var);
 
-int
-main(void)
+int main(void)
 {
 	pthread_t t1, t2;
 	int var = 5;
@@ -31,7 +29,6 @@ main(void)
 	}
 	pthread_join(t1, 0);
 
-	//creo il secondo thread con la somma del precedente
 	printf("2- var = %d\n", var);
 	if(pthread_create(&t2, NULL, &somma, (void*) &var) < 0) {
 		printf("Errore nel creare il thread 2!\n");
@@ -43,12 +40,11 @@ main(void)
 	return 0;
 }
 
-void*
-somma(void* var)
+void* somma(void* var)
 {
 	int* sum = (int*) var;
 	*sum += *sum;
-	printf("Thread %ld- var = %d\n", pthread_self(), *sum);
+	printf("Thread %ld - var = %d\n", pthread_self(), *sum);
 
 	pthread_exit(NULL);
 }

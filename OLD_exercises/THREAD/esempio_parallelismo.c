@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#define DELAY 1000000o
+#define DELAY 10000000
 
 /* this function is run by the second thread */
 void *thread2(void *x_void_ptr)

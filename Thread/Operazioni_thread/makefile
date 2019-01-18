@@ -1,13 +1,13 @@
 #Basso Nicola
 #aka Lince99
 
-CC=gcc
+CC=gcc -pthread
 RM=rm -f
 
 #name of the source (include folders if the source isn't in the current dir)
-SRC=REPLACE_ME.c
+SRC=prove_thread.c
 #add params after the name of the executable
-EXC=REPLACE_ME
+EXC=prove_thread
 
 all: compile run
 
