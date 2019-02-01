@@ -9,9 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/syscall.h>
 #include <pthread.h>
 #include "lib/colors.h"
 #include "lib/input_check.h"
+
 
 //numero massimo di thread generabili
 #ifndef MAX_THREAD
@@ -105,7 +107,7 @@ int init_dati(dati** things, int size) {
 void* routine(void* arg) {
 	//TODO stampa tid
 	printf(ANSI_BLUE "Sono il thread %d" ANSI_RESET "\n", 
-		   getpid());
+		   syscall(SYS_gettid));
 	
 	pthread_exit(NULL);
 }
