@@ -26,6 +26,8 @@
 
 pthread_mutex_t mutex;
 
+void* fill(void* arg);
+
 int main(int argc, char** argv) {
 	srand(time(NULL));
 	pthread_t* operai = NULL;
@@ -52,8 +54,7 @@ int main(int argc, char** argv) {
 		}
 		pthread_join(ts[i], (int*) peso);
 	}
-		
-	
+
 	return 0;
 }
 
