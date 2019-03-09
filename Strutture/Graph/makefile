@@ -5,9 +5,9 @@ CC=gcc #g++
 RM=rm -f
 
 # name of the source (include folders if the source isn't in the current dir)
-SRC=checker.c
+SRC=graph.c
 # name of the executable
-EXC=checker
+EXC=graph
 # params used in the program
 PARAMS=
 # compile params like optimization or other platform targeting
