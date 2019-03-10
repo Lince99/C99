@@ -7,12 +7,12 @@
 #include <stdlib.h> //atoi, malloc
 #include <string.h> //strlen
 #include "colors.h" //printf colors
-#include "input_check.h"
-#include "string_manager.h"
-#include "g_struct.h"
+#include "include/common/input_check.h"
+#include "include/common/string_manager.h"
+#include "include/g_struct.h"
 
 int main(int argc, char** argv) {
-
+    //TODO implement all created libraries
 
     return 0;
 }

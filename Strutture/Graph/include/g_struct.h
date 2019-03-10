@@ -31,6 +31,9 @@ struct GRAPH_ARC_T {
     graph_arc_t* next;
 };
 
+/*
+ *
+ */
 graph_node_t* init_graph_node(int val) {
     graph_node_t* node = NULL;
 
@@ -46,6 +49,9 @@ graph_node_t* init_graph_node(int val) {
     return node;
 }
 
+/*
+ *
+ */
 graph_arc_t* init_graph_arc(int val) {
     graph_arc_t* arc = NULL;
 
@@ -61,7 +67,9 @@ graph_arc_t* init_graph_arc(int val) {
     return node;
 }
 
-
+/*
+ *
+ */
 graph_node_t* graph_add_adiacent(graph_node_t* node, graph_node_t* ad, int wg) {
     graph_arc_t* new_arc = init_graph_arc(wg);
     graph_arc_t* curr_arc = NULL;
@@ -85,8 +93,52 @@ graph_node_t* graph_add_adiacent(graph_node_t* node, graph_node_t* ad, int wg) {
     return node;
 }
 
+//TODO implement graph functions
 
+/*
+ *
+ */
+char* graph_get_type(graph_node_t* node) {
+    char* str = NULL;
 
+    return str;
+}
+
+/*
+ *
+ */
+int graph_get_distance(graph_node_t* start, graph_node_t* end) {
+    int pass = 0;
+
+    return pass;
+}
+
+/*
+ *
+ */
+int graph_get_max_distance(graph_node_t* node) {
+    int dist = 0;
+
+    return dist;
+}
+
+/*
+ *
+ */
+int graph_get_n_node(graph_node_t* node) {
+    int count = 0;
+
+    return count;
+}
+
+/*
+ *
+ */
+int graph_get_n_arc(graph_node_t* node) {
+    int count = 0;
+
+    return count;
+}
 
 
 #endif //G_STRUCT_H

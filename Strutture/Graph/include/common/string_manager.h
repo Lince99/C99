@@ -1,5 +1,6 @@
 /*
- * Lince99
+ * Copyright 2019 Lince99
+ * for the license refer to the prject's license
  */
 /*
  * library that provide various functions that elaborate strings
