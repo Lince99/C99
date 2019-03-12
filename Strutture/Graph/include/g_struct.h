@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include "colors.h"
-#include "string_manager.h"
+#include "common/colors.h"
+#include "common/string_manager.h"
 
 //signatures
 typedef struct GRAPH_NODE_T graph_node_t;
@@ -64,7 +64,7 @@ graph_arc_t* init_graph_arc(int val) {
     arc->adiacent = NULL;
     arc->next = NULL;
 
-    return node;
+    return arc;
 }
 
 /*
