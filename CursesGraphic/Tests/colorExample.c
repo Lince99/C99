@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     if(has_colors() == FALSE)
     {
         endwin();
-        printf("Your terminal does not support color\n");
+        printf("Your terminal does not support colors!\n");
         exit(1);
     }
     start_color();
