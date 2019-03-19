@@ -37,34 +37,43 @@ int main(int argc, char *argv[]) {
             //free Ncurses window
             delwin(main_w);
             //wait for user to stop
-            getch();
+            //getch();
             break;
         }
         getmaxyx(stdscr, nlines, ncols);
-        wmove(main_w, y, x);
+        //wmove(main_w, y, x);
         switch(ch) {
             case KEY_UP:
-                wprintw(main_w, "\nUp Arrow");
+                if(y-1 >= 0)
+                    y--;
+                //wprintw(main_w, "\nUp Arrow");
                 break;
             case KEY_DOWN:
-                wprintw(main_w, "\nDown Arrow");
+                if(y+1 < nlines)
+                    y++;
+                //wprintw(main_w, "\nDown Arrow");
                 break;
             case KEY_LEFT:
-                wprintw(main_w, "\nLeft Arrow");
+                if(x-1 >= 0)
+                    x--;
+                //wprintw(main_w, "\nLeft Arrow");
                 break;
             case KEY_RIGHT:
-                wprintw(main_w, "\nRight Arrow");
+                if(x+1 < ncols)
+                    x++;
+                //wprintw(main_w, "\nRight Arrow");
                 break;
             default:
-                wprintw(main_w, "\nThe pressed key is ");
+                //mvwprintw(main_w, y, x, "\nThe pressed key is ");
                 attron(A_BOLD);
-                wprintw(main_w, "%c", ch);
+                mvwprintw(main_w, y, x, "%c", ch);
                 attroff(A_BOLD);
                 break;
         }
-        y == nlines-1 ? y = 0 : y++;
+        wmove(main_w, y, x);
+        //y == nlines-1 ? y = 0 : y++;
         //update window content
-        //wrefresh(main_w);
+        wrefresh(main_w);
     }
 
     //stop Ncurses
