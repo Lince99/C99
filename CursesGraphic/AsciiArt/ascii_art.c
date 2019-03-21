@@ -1,79 +1,30 @@
 #include <ncurses.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include "include/queue_char.h"
 
-typedef struct QUEUE_CHAR queue_char;
+//manage Ctrl+other buttons
+#ifndef CTRL
+    #define CTRL(c) ((c) & 037)
+#endif
 
-struct QUEUE_CHAR {
-    char value;
-    queue_char* next;
-};
+#ifndef QUEUE_LIMIT
+    #define QUEUE_LIMIT 10000
+#endif
 
-queue_char* initQueue_char(char val) {
-    queue_char* node = NULL;
-
-    node = (queue_char*) malloc(sizeof(queue_char));
-    if(node == NULL) {
-        perror("Error adding element to queue!\n");
-        return NULL;
-    }
-    node->value = val;
-    node->next = NULL;
-
-    return node;
-}
-
-queue_char* pushQueue_char(queue_char* q, char val) {
-    queue_char* node = NULL;
-    queue_char* head = q;
-
-    node = initQueue_char(val);
-    if(q == NULL)
-        return node;
-    while(q->next != NULL)
-        q = q->next;
-    q->next = node;
-
-    return head;
-}
-
-queue_char* popQueue_char(queue_char* q) {
-    queue_char* head = q;
-    queue_char* prev = NULL;
-
-    if(q == NULL)
-        return NULL;
-    while(q->next != NULL) {
-        prev = q;
-        q = q->next;
-    }
-    if(prev == NULL)
-        return NULL;
-    prev->next = NULL;
-
-    return head;
-}
-
-char getLastQueue_char(queue_char* q) {
-
-    if(q == NULL)
-        return 0;
-    while(q->next != NULL)
-        q = q->next;
-
-    return q->value;
-}
 
 
 int main(int argc, char *argv[]) {
     WINDOW *main_w;
-    queue_char* queue = NULL;
+    q_char* queue = NULL;
+    q_char* move_queue = NULL;
+    int queue_dim = 0;
     int ncols = 0;
     int nlines = 0;
     int x = 0;
     int y = 0;
 
     int ch = 0;
-    int old_ch = 0;
 
     //initialize Ncurses
     initscr();
@@ -82,10 +33,18 @@ int main(int argc, char *argv[]) {
     //print general info
     curs_set(0);
     noecho();
+    raw();
+    keypad(stdscr, 1);
+    nodelay(stdscr, 0);
     wprintw(stdscr, "Current terminal size: y = %d\tx = %d\n", nlines, ncols);
-    wprintw(stdscr, "Use arrows to move in the screen\nUse CTRL+Z to undo or CTRL+SHIFT+Z for redo\nUse CTRL+S to prompt save\nUse CTRL+Q to quit\n\n");
+    wprintw(stdscr, "\tUse arrows to move cursor in the screen\n");
+    wprintw(stdscr, "\tUse CTRL+S to prompt Save options\n");
+    wprintw(stdscr, "\tUse CTRL+L to prompt Load options\n");
+    wprintw(stdscr, "\tUse CTRL+Z to undo or CTRL+Y for redo\n");
+    wprintw(stdscr, "\tUse CTRL+C to prompt Clear options\n");
+    wprintw(stdscr, "\tUse CTRL+Q to Quit \n\n");
     attron(A_BOLD);
-    wprintw(stdscr, "Press any button to continue ");
+    wprintw(stdscr, "Press any button to continue");
     attroff(A_BOLD);
     getch();
     wclear(stdscr);
@@ -95,43 +54,60 @@ int main(int argc, char *argv[]) {
     raw();
     keypad(main_w, 1);
     noecho();
+    nodelay(main_w, 0); //1 for more responsive and cpu intensive
+    intrflush(main_w, 0);
 
+    //program run forever until user press CTRL+Q
     while(1) {
+        //get the user input
         ch = wgetch(main_w);
-        if(ch == KEY_EXIT) { //'q'
-            wclear(main_w);
-            wmove(main_w, 0, 0);
-            //free Ncurses window
-            delwin(main_w);
-            //ask confirm
-            break;
+        //if no input (or nodelay set to 1)
+        if(ch == ERR) {
+            usleep(25000);
+            continue;
         }
-        //INSERT HERE RESIZE
+        //detect quit command
+        if(ch == CTRL('q')) {
+            nodelay(main_w, 0);
+            wmove(main_w, 0, 0);
+            wclear(main_w);
+            //ask the user if he/she's sure to quit
+            wprintw(main_w, "Are you sure to quit? [Y/n] ");
+            ch = wgetch(main_w);
+            if(ch == 'Y' || ch == 'y') {
+                //free Ncurses window
+                delwin(main_w);
+                //free undo and redo queue
+                freeQ_char(queue);
+                //and exit infinite loop
+                break;
+            }
+        }
+        //resize the window
         getmaxyx(stdscr, nlines, ncols);
-        wmove(main_w, 0, 0);
         switch(ch) {
+            //Up Arrow
             case KEY_UP:
                 if(y-1 >= 0)
                     y--;
-                //wprintw(main_w, "\nUp Arrow");
                 break;
+            //Down Arrow
             case KEY_DOWN:
                 if(y+1 < nlines)
                     y++;
-                //wprintw(main_w, "\nDown Arrow");
                 break;
+            //Left Arrow
             case KEY_LEFT:
                 if(x-1 >= 0)
                     x--;
-                //wprintw(main_w, "\nLeft Arrow");
                 break;
+            //Right Arrow
             case KEY_RIGHT:
                 if(x+1 < ncols)
                     x++;
-                //wprintw(main_w, "\nRight Arrow");
                 break;
+            //window resize management
             case KEY_RESIZE:
-                mvwprintw(main_w, "\nResize event")
                 getmaxyx(main_w, nlines, ncols);
                 if(y >= nlines)
                     y = nlines-1;
@@ -139,12 +115,78 @@ int main(int argc, char *argv[]) {
                     y = ncols-1;
                 break;
             //TODO add undo e redo buttons (with push and pop)
+            case CTRL('z'):
+                mvwprintw(main_w, nlines-1, ncols-5, "PREV");
+                //clear last input
+                mvwprintw(main_w, y, x, " ");
+                if(move_queue == NULL)
+                    break;
+                //move queue pointer to the previous input
+                if(move_queue->prev != NULL) {
+                    move_queue = move_queue->prev;
+                    mvwprintw(main_w, nlines-1, 1, "DEBUG: qdim=%d in=%c qPrev=%c qy=%d qx=%d",
+                              queue_dim, ch, move_queue->value, move_queue->y, move_queue->x);
+                    //and is inside borders
+                    if(move_queue->y < nlines && move_queue->x < ncols) {
+                        //print the undo char
+                        ch = move_queue->value;
+                        y = move_queue->y;
+                        x = move_queue->x;
+                        wmove(main_w, y, x);
+                        mvwprintw(main_w, y, x, "%c", ch);
+                    }
+                }
+                break;
+            //redo
+            case CTRL('y'):
+                mvwprintw(main_w, nlines-1, ncols-5, "NEXT");
+                if(move_queue == NULL)
+                    break;
+                //move queue pointer to the next input
+                if(move_queue->next != NULL) {
+                    move_queue = move_queue->next;
+                    mvwprintw(main_w, nlines-1, 1, "DEBUG: qdim=%d in=%c qNext=%c qy=%d qx=%d",
+                              queue_dim, ch, move_queue->value, move_queue->y, move_queue->x);
+                    //and is inside borders
+                    if(move_queue->y < nlines && move_queue->x < ncols) {
+                        //print the redo char
+                        ch = move_queue->value;
+                        y = move_queue->y;
+                        x = move_queue->x;
+                        wmove(main_w, y, x);
+                        mvwprintw(main_w, y, x, "%c", ch);
+                    }
+                }
+                break;
+            //clear option
+            case CTRL('C'):
+                break;
+            //load option
+            case CTRL('L'):
+                break;
+            //save option
+            case CTRL('S'):
+                break;
+            //here ascii art is printed
             default:
+                if(ch < 32 || ch > 127)
+                    break;
                 attron(A_BOLD);
                 mvwprintw(main_w, y, x, "%c", ch);
                 attroff(A_BOLD);
+                //add char into undo queue
+                queue = pushQ_char(queue, ch, y, x);
+                //start undo and redo
+                move_queue = getLastQ_char(queue);
+                //respect defined memory limit
+                if(queue_dim >= QUEUE_LIMIT)
+                    queue = popHeadQ_char(queue);
+                else
+                    queue_dim++;
+                mvwprintw(main_w, nlines-1, 1, "DEBUG: qdim=%d in=%c", queue_dim, ch);
                 break;
         }
+        //move to the desired position
         wmove(main_w, y, x);
         //update window content
         wrefresh(main_w);
@@ -155,4 +197,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
