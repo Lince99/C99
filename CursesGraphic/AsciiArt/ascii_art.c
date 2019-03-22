@@ -2,15 +2,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "include/queue_char.h"
+#include "include/curses_manager.h"
 
-//manage Ctrl+other buttons
-#ifndef CTRL
-    #define CTRL(c) ((c) & 037)
-#endif
-
-#ifndef QUEUE_LIMIT
-    #define QUEUE_LIMIT 10000
-#endif
+//signatures
+int isAlphaNum(int ch);
 
 
 
@@ -18,7 +13,6 @@ int main(int argc, char *argv[]) {
     WINDOW *main_w;
     q_char* queue = NULL;
     q_char* move_queue = NULL;
-    int queue_dim = 0;
     int ncols = 0;
     int nlines = 0;
     int x = 0;
@@ -31,20 +25,21 @@ int main(int argc, char *argv[]) {
     //get current terminal window max coordinates
     getmaxyx(stdscr, nlines, ncols);
     //print general info
+    draw_borders(stdscr);
     curs_set(0);
     noecho();
     raw();
     keypad(stdscr, 1);
     nodelay(stdscr, 0);
-    wprintw(stdscr, "Current terminal size: y = %d\tx = %d\n", nlines, ncols);
-    wprintw(stdscr, "\tUse arrows to move cursor in the screen\n");
-    wprintw(stdscr, "\tUse CTRL+S to prompt Save options\n");
-    wprintw(stdscr, "\tUse CTRL+L to prompt Load options\n");
-    wprintw(stdscr, "\tUse CTRL+Z to undo or CTRL+Y for redo\n");
-    wprintw(stdscr, "\tUse CTRL+C to prompt Clear options\n");
-    wprintw(stdscr, "\tUse CTRL+Q to Quit \n\n");
+    mvwprintw(stdscr, 1, 1, "Current terminal size: y = %d\tx = %d", nlines, ncols);
+    mvwprintw(stdscr, 2, 1, "\tUse arrows to move cursor in the screen");
+    mvwprintw(stdscr, 3, 1, "\tUse CTRL+S to prompt Save options");
+    mvwprintw(stdscr, 4, 1, "\tUse CTRL+L to prompt Load options");
+    mvwprintw(stdscr, 5, 1, "\tUse CTRL+Z to undo or CTRL+Y for redo");
+    mvwprintw(stdscr, 6, 1, "\tUse CTRL+C to prompt Clear options");
+    mvwprintw(stdscr, 7, 1, "\tUse CTRL+Q to Quit");
     attron(A_BOLD);
-    wprintw(stdscr, "Press any button to continue");
+    mvwprintw(stdscr, 7, 1, "Press any button to continue");
     attroff(A_BOLD);
     getch();
     wclear(stdscr);
@@ -54,8 +49,9 @@ int main(int argc, char *argv[]) {
     raw();
     keypad(main_w, 1);
     noecho();
-    nodelay(main_w, 0); //1 for more responsive and cpu intensive
+    nodelay(main_w, 0); //1 for more responsive but cpu intensive
     intrflush(main_w, 0);
+    draw_borders(main_w);
 
     //program run forever until user press CTRL+Q
     while(1) {
@@ -113,6 +109,8 @@ int main(int argc, char *argv[]) {
                     y = nlines-1;
                 if(x >= ncols)
                     y = ncols-1;
+                wclear(main_w);
+                draw_borders(main_w);
                 break;
             //TODO add undo e redo buttons (with push and pop)
             case CTRL('z'):
@@ -169,7 +167,7 @@ int main(int argc, char *argv[]) {
                 break;
             //here ascii art is printed
             default:
-                if(ch < 32 || ch > 127)
+                if(!isAlphaNum(ch))
                     break;
                 attron(A_BOLD);
                 mvwprintw(main_w, y, x, "%c", ch);
@@ -195,5 +193,25 @@ int main(int argc, char *argv[]) {
     //stop Ncurses
     endwin();
 
+    return 0;
+}
+
+/*
+ * return 1 if it's a printable character, else return 0
+ */
+int isAlphaNum(int ch) {
+
+    //Ascii table 0-127
+    if(ch >= 32 || ch <= 126)
+        return 1;
+    //extended AScii table 128-255
+    if((ch == 128) || (ch >= 130 || ch <= 140) || (ch == 142) ||
+       (ch >= 130 || ch <= 140) || (ch >= 130 || ch <= 140) ||
+       (ch == 142) || (ch >= 145 || ch <= 156) || (ch == 158) ||
+       (ch == 159) || (ch >= 161 || ch <= 172) ||
+       (ch >= 174 || ch <= 183) || (ch >= 185 || ch <= 255))
+        return 1;
+
+    //non-printable character
     return 0;
 }

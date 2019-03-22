@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifndef QUEUE_LIMIT
+    #define QUEUE_LIMIT 10000
+#endif
+
+int queue_dim = 0;
+
 //queue struct for undo and redo (bidirectional list)
 typedef struct Q_CHAR q_char;
 struct Q_CHAR {
