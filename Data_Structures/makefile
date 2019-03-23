@@ -1,5 +1,4 @@
-#Basso Nicola
-#aka Lince99
+#Lince99
 
 CC=gcc
 RM=rm -f
