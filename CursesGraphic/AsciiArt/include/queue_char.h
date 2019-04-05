@@ -1,3 +1,19 @@
+/* Copyright (C) 2019  Lince99
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program. If not, see http://www.gnu.org/licenses .
+ */
+
 #ifndef QUEUE_CHAR_H
 #define QUEUE_CHAR_H
 
@@ -13,7 +29,7 @@ int queue_dim = 0;
 //queue struct for undo and redo (bidirectional list)
 typedef struct Q_CHAR q_char;
 struct Q_CHAR {
-    char value;
+    int value;
     int y;
     int x;
     q_char* next;
@@ -23,7 +39,7 @@ struct Q_CHAR {
 /*
  * create new node and return it
  */
-q_char* initQ_char(char val, int y, int x) {
+q_char* initQ_char(int val, int y, int x) {
     q_char* node = NULL;
 
     node = (q_char*) malloc(sizeof(q_char));
@@ -43,7 +59,7 @@ q_char* initQ_char(char val, int y, int x) {
 /*
  * add at the tail of the queue 1 new node
  */
-q_char* pushQ_char(q_char* head, char val, int y, int x) {
+q_char* pushQ_char(q_char* head, int val, int y, int x) {
     q_char* node = NULL;
     q_char* q = head;
 

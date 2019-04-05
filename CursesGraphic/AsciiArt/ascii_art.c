@@ -19,9 +19,7 @@
 #include <unistd.h>
 #include "include/queue_char.h"
 #include "include/curses_manager.h"
-
-//signatures
-int isAlphaNum(int ch);
+#include "include/ascii_matrix.h"
 
 
 
@@ -33,13 +31,15 @@ int main(int argc, char *argv[]) {
     int nlines = 0;
     int x = 0;
     int y = 0;
-
+    //user input var
     int ch = 0;
 
     //initialize Ncurses
     initscr();
     //get current terminal window max coordinates
     getmaxyx(stdscr, nlines, ncols);
+    //TODO add minimum terminal size requirement
+    
     //print general info
     draw_borders(stdscr);
     curs_set(0);
@@ -47,15 +47,14 @@ int main(int argc, char *argv[]) {
     raw();
     keypad(stdscr, 1);
     nodelay(stdscr, 0);
-    mvwprintw(stdscr, 1, 1, "Current terminal size: y = %d\tx = %d", nlines, ncols);
-    mvwprintw(stdscr, 2, 1, "\tUse arrows to move cursor in the screen");
-    mvwprintw(stdscr, 3, 1, "\tUse CTRL+S to prompt Save options");
-    mvwprintw(stdscr, 4, 1, "\tUse CTRL+L to prompt Load options");
-    mvwprintw(stdscr, 5, 1, "\tUse CTRL+Z to undo or CTRL+Y for redo");
-    mvwprintw(stdscr, 6, 1, "\tUse CTRL+C to prompt Clear options");
-    mvwprintw(stdscr, 7, 1, "\tUse CTRL+Q to Quit");
+    mvwprintw(stdscr, 1, 1, "\tUse arrows to move cursor in the screen");
+    mvwprintw(stdscr, 2, 1, "\tUse CTRL+S to prompt Save options");
+    mvwprintw(stdscr, 3, 1, "\tUse CTRL+L to prompt Load options");
+    mvwprintw(stdscr, 4, 1, "\tUse CTRL+Z to undo or CTRL+Y for redo");
+    mvwprintw(stdscr, 5, 1, "\tUse CTRL+C to prompt Clear options");
+    mvwprintw(stdscr, 6, 1, "\tUse CTRL+Q to Quit");
     attron(A_BOLD);
-    mvwprintw(stdscr, 7, 1, "Press any button to continue");
+    mvwprintw(stdscr, 8, 1, "Press any button to continue");
     attroff(A_BOLD);
     getch();
     wclear(stdscr);
@@ -68,6 +67,10 @@ int main(int argc, char *argv[]) {
     nodelay(main_w, 0); //1 for more responsive but cpu intensive
     intrflush(main_w, 0);
     draw_borders(main_w);
+    //start cursor position
+    y = 1; //(int)nlines/2;
+    x = 1; //(int)ncols/2;
+    wmove(main_w, y, x);
 
     //program run forever until user press CTRL+Q
     while(1) {
@@ -81,10 +84,10 @@ int main(int argc, char *argv[]) {
         //detect quit command
         if(ch == CTRL('q')) {
             nodelay(main_w, 0);
-            wmove(main_w, 0, 0);
             wclear(main_w);
+            draw_borders(main_w);
             //ask the user if he/she's sure to quit
-            wprintw(main_w, "Are you sure to quit? [Y/n] ");
+            mvwprintw(main_w, 1, 1, "Are you sure to quit? [Y/n]");
             ch = wgetch(main_w);
             if(ch == 'Y' || ch == 'y') {
                 //free Ncurses window
@@ -94,43 +97,44 @@ int main(int argc, char *argv[]) {
                 //and exit infinite loop
                 break;
             }
+            wclear(main_w);
+            draw_borders(main_w);
         }
-        //resize the window
-        getmaxyx(stdscr, nlines, ncols);
+        //resize the window UNCOMMENT THIS IF KEY_RESIZE doesn't work
+        //getmaxyx(stdscr, nlines, ncols);
         switch(ch) {
             //Up Arrow
             case KEY_UP:
-                if(y-1 >= 0)
+                if(y-1 >= 1)
                     y--;
                 break;
             //Down Arrow
             case KEY_DOWN:
-                if(y+1 < nlines)
+                if(y+1 < nlines-1)
                     y++;
                 break;
             //Left Arrow
             case KEY_LEFT:
-                if(x-1 >= 0)
+                if(x-1 >= 1)
                     x--;
                 break;
             //Right Arrow
             case KEY_RIGHT:
-                if(x+1 < ncols)
+                if(x+1 < ncols-1)
                     x++;
                 break;
             //window resize management
             case KEY_RESIZE:
                 getmaxyx(main_w, nlines, ncols);
-                if(y >= nlines)
+                if(y >= nlines-1)
                     y = nlines-1;
-                if(x >= ncols)
+                if(x >= ncols-1)
                     y = ncols-1;
                 wclear(main_w);
                 draw_borders(main_w);
                 break;
-            //TODO add undo e redo buttons (with push and pop)
+            //undo
             case CTRL('z'):
-                mvwprintw(main_w, nlines-1, ncols-5, "PREV");
                 //clear last input
                 mvwprintw(main_w, y, x, " ");
                 if(move_queue == NULL)
@@ -138,10 +142,8 @@ int main(int argc, char *argv[]) {
                 //move queue pointer to the previous input
                 if(move_queue->prev != NULL) {
                     move_queue = move_queue->prev;
-                    mvwprintw(main_w, nlines-1, 1, "DEBUG: qdim=%d in=%c qPrev=%c qy=%d qx=%d",
-                              queue_dim, ch, move_queue->value, move_queue->y, move_queue->x);
                     //and is inside borders
-                    if(move_queue->y < nlines && move_queue->x < ncols) {
+                    if(move_queue->y < nlines-1 && move_queue->x < ncols-1) {
                         //print the undo char
                         ch = move_queue->value;
                         y = move_queue->y;
@@ -153,14 +155,11 @@ int main(int argc, char *argv[]) {
                 break;
             //redo
             case CTRL('y'):
-                mvwprintw(main_w, nlines-1, ncols-5, "NEXT");
                 if(move_queue == NULL)
                     break;
                 //move queue pointer to the next input
                 if(move_queue->next != NULL) {
                     move_queue = move_queue->next;
-                    mvwprintw(main_w, nlines-1, 1, "DEBUG: qdim=%d in=%c qNext=%c qy=%d qx=%d",
-                              queue_dim, ch, move_queue->value, move_queue->y, move_queue->x);
                     //and is inside borders
                     if(move_queue->y < nlines && move_queue->x < ncols) {
                         //print the redo char
@@ -174,12 +173,38 @@ int main(int argc, char *argv[]) {
                 break;
             //clear option
             case CTRL('C'):
+                wclear(main_w);
+                draw_borders(main_w);
+                //free undo and redo queue
+                mvwprintw(main_w, 1, 1, "Clear undo/redo queue? [Y/n]");
+                ch = wgetch(main_w);
+                if(ch == 'Y' || ch == 'y') {
+                    freeQ_char(queue);
+                    move_queue = NULL;
+                }
+                wclear(main_w);
+                draw_borders(main_w);
                 break;
             //load option
             case CTRL('L'):
+                nodelay(main_w, 0);
+                wclear(main_w);
+                draw_borders(main_w);
+                mvwprintw(main_w, 1, 1, "Enter the filename:");
+                curs_set(1);
+                //request file name from user
+                curs_set(0);
                 break;
             //save option
             case CTRL('S'):
+                nodelay(main_w, 0);
+                wclear(main_w);
+                draw_borders(main_w);
+                mvwprintw(main_w, 1, 1, "Enter the filename:");
+                curs_set(1);
+                //request file name from user
+                curs_set(0);
+                mvwprintw(main_w, 1, 1, "Ascii art saved!");
                 break;
             //here ascii art is printed
             default:
@@ -197,7 +222,6 @@ int main(int argc, char *argv[]) {
                     queue = popHeadQ_char(queue);
                 else
                     queue_dim++;
-                mvwprintw(main_w, nlines-1, 1, "DEBUG: qdim=%d in=%c", queue_dim, ch);
                 break;
         }
         //move to the desired position
@@ -209,25 +233,5 @@ int main(int argc, char *argv[]) {
     //stop Ncurses
     endwin();
 
-    return 0;
-}
-
-/*
- * return 1 if it's a printable character, else return 0
- */
-int isAlphaNum(int ch) {
-
-    //Ascii table 0-127
-    if(ch >= 32 || ch <= 126)
-        return 1;
-    //extended AScii table 128-255
-    if((ch == 128) || (ch >= 130 || ch <= 140) || (ch == 142) ||
-       (ch >= 130 || ch <= 140) || (ch >= 130 || ch <= 140) ||
-       (ch == 142) || (ch >= 145 || ch <= 156) || (ch == 158) ||
-       (ch == 159) || (ch >= 161 || ch <= 172) ||
-       (ch >= 174 || ch <= 183) || (ch >= 185 || ch <= 255))
-        return 1;
-
-    //non-printable character
     return 0;
 }

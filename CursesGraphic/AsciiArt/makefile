@@ -1,6 +1,6 @@
 #Copyright (c) 2019 Lince99 under MIT license
 
-CC=gcc
+CC=gcc -Wall
 
 # name of the source (include folders if the source isn't in the current dir)
 SRC=ascii_art.c
@@ -9,14 +9,16 @@ EXC=ascii_art
 
 
 
-all: clean_reset compile run
+all: clean_screen compile run clean
 
 compile:
 	@$(CC) -o $(EXC) $(SRC) -lncurses
 	@strip $(EXC)
 
-clean_reset:
-	@rm -f $(EXC)
+clean:
+	@rm $(EXC)
+
+clean_screen:
 	@reset && clear
 
 run:

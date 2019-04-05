@@ -12,22 +12,22 @@
 #include "common/colors.h"
 
 //TODO implements all functions and structure about adjacents' matrix
-typedef struct ADJNODE AdjNode_t;
+typedef struct ADJMATRIX_T adj_matrix_t;
 
-strucy ADJNODE {
-    int value;
-    AdjNode_t* row; //directly connected graph nodes (has next = NULL)
-    AdjNode_t* next; //list of nodes
+strucy ADJMATRIX_T {
+    graph_node_t* value;
+    graph_node_t* row; //directly connected graph nodes (has next = NULL)
+    adj_matrix_t* next; //list of nodes
 };
 
 
 /*
  * function that try to alloc one new node
  */
-AdjNode_t* init_AdjNode_t(int val) {
-    AdjNode_t* node = NULL;
+adj_matrix_t* init_adj_matrix_t(graph_node_t* val) {
+    adj_matrix_t* node = NULL;
 
-    node = (AdjNode_t*) malloc(sizeof(AdjNode_t));
+    node = (adj_matrix_t*) malloc(sizeof(adj_matrix_t));
     if(node == NULL) {
         printf(ANSI_RED "Error on alloc new adjacent node!" ANSI_RESET "\n");
         return NULL;
@@ -42,6 +42,8 @@ AdjNode_t* init_AdjNode_t(int val) {
 /*
  * add to root->row
  */
-AdjNode_t* addNeighbour_AdjNode_t(AdjNode_t* root, AdjNode_t* neigh)
+adj_matrix_t* add_row_adj_matrix_t(graph_node_t* node, graph_node_t* val) {
+
+}
 
 #endif //G_MATRIX_ADJ_H
