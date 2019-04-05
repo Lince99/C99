@@ -23,7 +23,7 @@ struct NARYNODE {
 /*
  * function that try to alloc one new node
  */
-naryNode_t* init_naryNode_int(int val) {
+naryNode_t* init_naryNode(int val) {
     naryNode_t* node = NULL;
 
     node = (naryNode_t*) malloc(sizeof(naryNode_t));

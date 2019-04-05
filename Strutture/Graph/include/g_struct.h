@@ -27,12 +27,12 @@ struct GRAPH_NODE_T {
 
 struct GRAPH_ARC_T {
     int weight;
-    graph_node_t* adiacent;
-    graph_arc_t* next;
+    graph_node_t* adiacent; //adjacent node
+    graph_arc_t* next; //next arc of this node
 };
 
 /*
- *
+ * initialize 1 node
  */
 graph_node_t* init_graph_node(int val) {
     graph_node_t* node = NULL;
@@ -50,7 +50,7 @@ graph_node_t* init_graph_node(int val) {
 }
 
 /*
- *
+ * initialize 1 arc
  */
 graph_arc_t* init_graph_arc(int val) {
     graph_arc_t* arc = NULL;
@@ -68,26 +68,26 @@ graph_arc_t* init_graph_arc(int val) {
 }
 
 /*
- *
+ * add a directly connected node to another node
  */
-graph_node_t* graph_add_adiacent(graph_node_t* node, graph_node_t* ad, int wg) {
+graph_node_t* graph_add_adiacent(graph_node_t* root, graph_node_t* ad, int wg) {
     graph_arc_t* new_arc = init_graph_arc(wg);
     graph_arc_t* curr_arc = NULL;
 
     if(node == NULL)
-        node = init_graph_node(0);
+        root = init_graph_node(0);
     if(ad == NULL)
         ad = init_graph_node(0);
 
     new_arc->adiacent = ad;
 
-    if(node->arc == NULL)
-        node->arc = new_arc;
+    if(root->arc == NULL)
+        root->arc = new_arc;
     else {
-        curr_arc = node->arc;
+        curr_arc = root->arc;
         while(curr_arc->next != NULL)
             curr_arc = curr_arc->next;
-        curr_arc = new_arc;
+        curr_arc->next = new_arc;
     }
 
     return node;
