@@ -28,6 +28,17 @@ int queue_dim = 0;
 
 //queue struct for undo and redo (bidirectional list)
 typedef struct Q_CHAR q_char;
+
+//signatures
+q_char* initQ_char(int, int, int);
+q_char* pushQ_char(q_char*, int, int, int);
+q_char* popQ_char(q_char*);
+q_char* popHeadQ_char(q_char*);
+q_char* getLastQ_char(q_char*);
+void freeQ_char(q_char*);
+
+
+
 struct Q_CHAR {
     int value;
     int y;

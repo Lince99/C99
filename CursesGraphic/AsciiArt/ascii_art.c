@@ -33,13 +33,17 @@ int main(int argc, char *argv[]) {
     int y = 0;
     //user input var
     int ch = 0;
+    char* usr_str = NULL;
+    int** matrix = NULL;
+    int mat_y = 0;
+    int mat_x = 0;
 
     //initialize Ncurses
     initscr();
     //get current terminal window max coordinates
     getmaxyx(stdscr, nlines, ncols);
     //TODO add minimum terminal size requirement
-    
+
     //print general info
     draw_borders(stdscr);
     curs_set(0);
@@ -65,12 +69,25 @@ int main(int argc, char *argv[]) {
     keypad(main_w, 1);
     noecho();
     nodelay(main_w, 0); //1 for more responsive but cpu intensive
-    intrflush(main_w, 0);
+    intrflush(main_w, 0); //1 to inherit from tty driver
     draw_borders(main_w);
     //start cursor position
     y = 1; //(int)nlines/2;
     x = 1; //(int)ncols/2;
     wmove(main_w, y, x);
+    //init ascii art matrix
+    mat_y = nlines-1;
+    mat_x = ncols-1;
+    matrix = init_matrix(mat_y, mat_x);
+    //error on malloc
+    if(matrix == NULL) {
+        attron(COLOR_RED);
+        mvwprintw(stdscr, 0, 0, "Error on matrix allocation! Exiting...");
+        attroff(COLOR_RED);
+        endwin();
+        return 1;
+    }
+
 
     //program run forever until user press CTRL+Q
     while(1) {
@@ -94,6 +111,9 @@ int main(int argc, char *argv[]) {
                 delwin(main_w);
                 //free undo and redo queue
                 freeQ_char(queue);
+                //free ascii matrix
+                if(matrix != NULL)
+                    free(matrix);
                 //and exit infinite loop
                 break;
             }
@@ -132,11 +152,23 @@ int main(int argc, char *argv[]) {
                     y = ncols-1;
                 wclear(main_w);
                 draw_borders(main_w);
+                //update ascii matrix size (only bigger, not smaller)
+                if(nlines-1 > mat_y) {
+                    mat_y = nlines-1;
+                    matrix = resize_matrix_lines(matrix, mat_y, mat_x);
+                }
+                if(ncols-1 > mat_x) {
+                    mat_x = ncols-1;
+                    matrix = resize_matrix_cols(matrix, mat_y, mat_x);
+                }
                 break;
             //undo
             case CTRL('z'):
                 //clear last input
                 mvwprintw(main_w, y, x, " ");
+                //remove from matrix
+                matrix[y-1][x-1] = 0;
+                //check if there is a queue
                 if(move_queue == NULL)
                     break;
                 //move queue pointer to the previous input
@@ -150,6 +182,8 @@ int main(int argc, char *argv[]) {
                         x = move_queue->x;
                         wmove(main_w, y, x);
                         mvwprintw(main_w, y, x, "%c", ch);
+                        //update matrix content
+                        matrix[y-1][x-1] = ch;
                     }
                 }
                 break;
@@ -161,13 +195,15 @@ int main(int argc, char *argv[]) {
                 if(move_queue->next != NULL) {
                     move_queue = move_queue->next;
                     //and is inside borders
-                    if(move_queue->y < nlines && move_queue->x < ncols) {
+                    if(move_queue->y < nlines-1 && move_queue->x < ncols-1) {
                         //print the redo char
                         ch = move_queue->value;
                         y = move_queue->y;
                         x = move_queue->x;
                         wmove(main_w, y, x);
                         mvwprintw(main_w, y, x, "%c", ch);
+                        //update matrix content
+                        matrix[y-1][x-1] = ch;
                     }
                 }
                 break;
@@ -181,6 +217,13 @@ int main(int argc, char *argv[]) {
                 if(ch == 'Y' || ch == 'y') {
                     freeQ_char(queue);
                     move_queue = NULL;
+                    //remove matrix content
+                    if(matrix != NULL)
+                        free(matrix);
+                    //and re-init ascii art matrix
+                    mat_y = nlines-1;
+                    mat_x = ncols-1;
+                    matrix = init_matrix(mat_y, mat_x);
                 }
                 wclear(main_w);
                 draw_borders(main_w);
@@ -190,29 +233,37 @@ int main(int argc, char *argv[]) {
                 nodelay(main_w, 0);
                 wclear(main_w);
                 draw_borders(main_w);
-                mvwprintw(main_w, 1, 1, "Enter the filename:");
-                curs_set(1);
                 //request file name from user
-                curs_set(0);
+                mvwprintw(main_w, 1, 1, "Enter the filename:");
+                /*curs_set(1);
+                echo();
+                mvwgetnstr(main_w, 2, 1, usr_str, 64);
+                noecho();
+                curs_set(0);*/
                 break;
             //save option
             case CTRL('S'):
                 nodelay(main_w, 0);
                 wclear(main_w);
                 draw_borders(main_w);
-                mvwprintw(main_w, 1, 1, "Enter the filename:");
-                curs_set(1);
                 //request file name from user
-                curs_set(0);
+                mvwprintw(main_w, 1, 1, "Enter the filename:");
+                /*curs_set(1);
+                echo();
+                mvwgetnstr(main_w, 2, 1, usr_str, 64);
+                noecho();
+                curs_set(0);*/
                 mvwprintw(main_w, 1, 1, "Ascii art saved!");
                 break;
             //here ascii art is printed
             default:
                 if(!isAlphaNum(ch))
                     break;
-                attron(A_BOLD);
-                mvwprintw(main_w, y, x, "%c", ch);
-                attroff(A_BOLD);
+                //attron(A_BOLD);
+                //mvwprintw(main_w, y, x, "%c", ch);
+                //attroff(A_BOLD);
+                //save char into ascii matrix
+                matrix[y-1][x-1] = ch;
                 //add char into undo queue
                 queue = pushQ_char(queue, ch, y, x);
                 //start undo and redo
@@ -224,6 +275,7 @@ int main(int argc, char *argv[]) {
                     queue_dim++;
                 break;
         }
+        print_matrix(main_w, matrix, mat_y, mat_x);
         //move to the desired position
         wmove(main_w, y, x);
         //update window content

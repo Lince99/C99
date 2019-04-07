@@ -25,11 +25,13 @@
 #endif
 
 //signatures
-void draw_borders(WINDOW *screen);
+void draw_borders(WINDOW*);
 
 
-
-void draw_borders(WINDOW *screen) {
+/*
+ * draw a simple AsciiExtended-style border
+ */
+void draw_borders(WINDOW* screen) {
     int x = 0;
     int y = 0;
     int i = 0;
