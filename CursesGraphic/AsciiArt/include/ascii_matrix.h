@@ -17,14 +17,19 @@
 #ifndef ASCII_MATRIX_H
 #define ASCII_MATRIX_H
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 //signatures
 int isAlphaNum(int);
+int is_void_matrix(int**, int, int);
 int** init_matrix(int, int);
-int** resize_matrix_lines(int**, int, int);
-int** resize_matrix_cols(int**, int, int);
+int** resize_matrix(int**, int*, int*, int, int);
 void print_matrix(WINDOW*, int**, int, int);
+void print_matrix_stdout(int**, int, int);
+void free_matrix(int**, int, int);
+int matrix_to_file(int**, int, int, char*);
 
 
 
@@ -49,54 +54,79 @@ int isAlphaNum(int ch) {
 }
 
 /*
+ * check if the matrix is completely void
+ */
+int is_void_matrix(int** matrix, int mat_y, int mat_x) {
+
+    if(matrix == NULL)
+        return 1;
+
+    for(; mat_y > 0; mat_y--) {
+        for (; mat_x > 0; mat_x--) {
+            if(matrix[mat_y][mat_x] != 0)
+                return 1;
+        }
+    }
+
+    return 0;
+}
+
+/*
  * allocate a new matrix
  */
 int** init_matrix(int y, int x) {
     int** mat = NULL;
-    int i = 0;
+    int i, j;
 
     if(y <= 0 || x <= 0)
         return NULL;
-    mat = (int**) calloc(y, sizeof(int));
+    //init rows
+    mat = (int**) malloc(sizeof(int*)*y);
     if(mat == NULL)
         return NULL;
+    //init every cell in every row
     for(i = 0; i < y; i++) {
-        mat[i] = (int*) calloc(x, sizeof(int));
+        mat[i] = (int*) malloc(sizeof(int)*x);
         if(mat[i] == NULL)
             return NULL;
+        for(j = 0; j < x; j++)
+            mat[i][j] = 0;
     }
 
     return mat;
 }
 
-/*
- * resize the matrix with new y size
- */
-int** resize_matrix_lines(int** mat, int y, int x) {
-
-    if(y <= 0 || x <= 0)
-        return NULL;
-    if(mat == NULL)
-        return init_matrix(y, x);
-    mat = (int**) realloc(mat, y*sizeof(int));
-
-    return mat;
-}
 
 /*
- * resize the matrix with new x size
+ * resize matrix only if new size is bigger than original,
+ * then return the new matrix and the new size within 2nd (y) and 3rd (x) param
  */
-int** resize_matrix_cols(int** mat, int y, int x) {
-    int i = 0;
+int** resize_matrix(int** mat, int* mat_y, int* mat_x, int new_y, int new_x) {
+    int y, x;
 
-    if(y <= 0 || x <= 0)
-        return NULL;
-    if(mat == NULL)
-        return init_matrix(y, x);
-    for(i = 0; i < y; i++) {
-        mat[i] = (int*) realloc(mat, x*sizeof(int));
-        if(mat[i] == NULL)
-            return NULL;
+    if(mat == NULL) {
+        *mat_y = new_y;
+        *mat_x = new_x;
+        return init_matrix(new_y, new_x);
+    }
+    //check rows resize
+    if(new_y > *mat_y) {
+        mat = (int**) realloc(mat, sizeof(int*)*new_y);
+        for(y = (*mat_y)-1; y < new_y; y++) {
+            mat[y] = (int*) malloc(sizeof(int)*(*mat_x));
+            for(x = 0; x < *mat_x; x++)
+                mat[y][x] = 0;
+        }
+        *mat_y = new_y;
+    }
+    //check column resize
+    if(new_x > *mat_x) {
+        for(y = 0; y < *mat_y; y++) {
+            mat[y] = (int*) realloc(mat[y], sizeof(int)*new_x);
+            for(x = new_x-(*mat_x)-1; x < new_x; x++)
+                mat[y][x] = 0;
+        }
+        *mat_x = new_x;
     }
 
     return mat;
@@ -110,7 +140,7 @@ void print_matrix(WINDOW* win, int** matrix, int mat_y, int mat_x) {
     int y, x;
     int nlines, ncols;
 
-    if(win == NULL)
+    if(win == NULL || matrix == NULL)
         return;
     getmaxyx(win, nlines, ncols);
     for(y = 1; y < nlines-1 && y < mat_y; y++) {
@@ -121,6 +151,35 @@ void print_matrix(WINDOW* win, int** matrix, int mat_y, int mat_x) {
                 mvwprintw(win, y, x, " ");
         }
     }
+
+}
+
+/*
+ * print matrix content to stdout
+ */
+void print_matrix_stdout(int** matrix, int mat_y, int mat_x) {
+    int y, x;
+
+    if(matrix == NULL)
+        return;
+    printf("+");
+    for(x = 1; x < mat_x-1; x++)
+        printf("-");
+    printf("+");
+    for(y = 0; y < mat_y; y++) {
+        printf("|");
+        for(x = 0; x < mat_x; x++) {
+            if(matrix[y][x] != 0)
+                printf("%c", matrix[y][x]);
+            else
+                printf(" ");
+        }
+        printf("|\n");
+    }
+    printf("\n+");
+    for(x = 1; x < mat_x-1; x++)
+        printf("-");
+    printf("+\n");
 
 }
 

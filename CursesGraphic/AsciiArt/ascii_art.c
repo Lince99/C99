@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     int y = 0;
     //user input var
     int ch = 0;
-    char* usr_str = NULL;
+    //char* usr_str = NULL;
     int** matrix = NULL;
     int mat_y = 0;
     int mat_x = 0;
@@ -42,8 +42,12 @@ int main(int argc, char *argv[]) {
     initscr();
     //get current terminal window max coordinates
     getmaxyx(stdscr, nlines, ncols);
-    //TODO add minimum terminal size requirement
-
+    //Minimum terminal size requirement
+    if(ncols <= 32 || nlines <= 9) {
+        mvwprintw(stdscr, 0, 0, "TOO SMALL!");
+        endwin();
+        return 2;
+    }
     //print general info
     draw_borders(stdscr);
     curs_set(0);
@@ -51,12 +55,13 @@ int main(int argc, char *argv[]) {
     raw();
     keypad(stdscr, 1);
     nodelay(stdscr, 0);
-    mvwprintw(stdscr, 1, 1, "\tUse arrows to move cursor in the screen");
-    mvwprintw(stdscr, 2, 1, "\tUse CTRL+S to prompt Save options");
-    mvwprintw(stdscr, 3, 1, "\tUse CTRL+L to prompt Load options");
-    mvwprintw(stdscr, 4, 1, "\tUse CTRL+Z to undo or CTRL+Y for redo");
-    mvwprintw(stdscr, 5, 1, "\tUse CTRL+C to prompt Clear options");
-    mvwprintw(stdscr, 6, 1, "\tUse CTRL+Q to Quit");
+    mvwprintw(stdscr, 1, 1, " Use arrows to move the cursor");
+    mvwprintw(stdscr, 2, 1, " Use CTRL+S to Save");
+    mvwprintw(stdscr, 3, 1, " Use CTRL+L to Load file");
+    mvwprintw(stdscr, 4, 1, " Use CTRL+Z to undo");
+    mvwprintw(stdscr, 5, 1, " Use CTRL+Y for redo");
+    mvwprintw(stdscr, 6, 1, " Use CTRL+C to Clear the screen");
+    mvwprintw(stdscr, 7, 1, " Use CTRL+Q to Quit");
     attron(A_BOLD);
     mvwprintw(stdscr, 8, 1, "Press any button to continue");
     attroff(A_BOLD);
@@ -81,13 +86,10 @@ int main(int argc, char *argv[]) {
     matrix = init_matrix(mat_y, mat_x);
     //error on malloc
     if(matrix == NULL) {
-        attron(COLOR_RED);
         mvwprintw(stdscr, 0, 0, "Error on matrix allocation! Exiting...");
-        attroff(COLOR_RED);
         endwin();
         return 1;
     }
-
 
     //program run forever until user press CTRL+Q
     while(1) {
@@ -112,8 +114,7 @@ int main(int argc, char *argv[]) {
                 //free undo and redo queue
                 freeQ_char(queue);
                 //free ascii matrix
-                if(matrix != NULL)
-                    free(matrix);
+                free(matrix);
                 //and exit infinite loop
                 break;
             }
@@ -153,14 +154,10 @@ int main(int argc, char *argv[]) {
                 wclear(main_w);
                 draw_borders(main_w);
                 //update ascii matrix size (only bigger, not smaller)
-                if(nlines-1 > mat_y) {
-                    mat_y = nlines-1;
-                    matrix = resize_matrix_lines(matrix, mat_y, mat_x);
-                }
-                if(ncols-1 > mat_x) {
-                    mat_x = ncols-1;
-                    matrix = resize_matrix_cols(matrix, mat_y, mat_x);
-                }
+                if(nlines-1 > mat_y)
+                    matrix = resize_matrix(matrix, &mat_y, &mat_x, nlines-1, mat_x);
+                if(ncols-1 > mat_x)
+                    matrix = resize_matrix(matrix, &mat_y, &mat_x, mat_y, ncols-1);
                 break;
             //undo
             case CTRL('z'):
@@ -212,14 +209,14 @@ int main(int argc, char *argv[]) {
                 wclear(main_w);
                 draw_borders(main_w);
                 //free undo and redo queue
-                mvwprintw(main_w, 1, 1, "Clear undo/redo queue? [Y/n]");
+                mvwprintw(main_w, 1, 1, "Also clear undo queue? [Y/n]");
                 ch = wgetch(main_w);
                 if(ch == 'Y' || ch == 'y') {
                     freeQ_char(queue);
                     move_queue = NULL;
                     //remove matrix content
-                    if(matrix != NULL)
-                        free(matrix);
+                    free(matrix);
+                    matrix = NULL;
                     //and re-init ascii art matrix
                     mat_y = nlines-1;
                     mat_x = ncols-1;
@@ -228,40 +225,44 @@ int main(int argc, char *argv[]) {
                 wclear(main_w);
                 draw_borders(main_w);
                 break;
+            //TODO READ STRING, LOAD MATRIX FROM FILE
             //load option
-            case CTRL('L'):
+            /*case CTRL('L'):
                 nodelay(main_w, 0);
                 wclear(main_w);
                 draw_borders(main_w);
                 //request file name from user
-                mvwprintw(main_w, 1, 1, "Enter the filename:");
-                /*curs_set(1);
+                mvwprintw(main_w, 1, 1, "Load filename:\n");
+                curs_set(1);
                 echo();
-                mvwgetnstr(main_w, 2, 1, usr_str, 64);
+                wgetstr(main_w, usr_str);
                 noecho();
-                curs_set(0);*/
-                break;
+                curs_set(0);
+                free(usr_str);
+                mvwprintw(main_w, 1, 1, "Ascii art loaded!");
+                break;*/
             //save option
-            case CTRL('S'):
+            /*case CTRL('S'):
                 nodelay(main_w, 0);
                 wclear(main_w);
                 draw_borders(main_w);
                 //request file name from user
-                mvwprintw(main_w, 1, 1, "Enter the filename:");
-                /*curs_set(1);
+                mvwprintw(main_w, 1, 1, "Save filename:\n");
+                curs_set(1);
                 echo();
-                mvwgetnstr(main_w, 2, 1, usr_str, 64);
+                wgetstr(main_w, usr_str);
                 noecho();
-                curs_set(0);*/
+                curs_set(0);
+                free(usr_str);
                 mvwprintw(main_w, 1, 1, "Ascii art saved!");
-                break;
+                break;*/
             //here ascii art is printed
             default:
                 if(!isAlphaNum(ch))
                     break;
-                //attron(A_BOLD);
-                //mvwprintw(main_w, y, x, "%c", ch);
-                //attroff(A_BOLD);
+                attron(A_BOLD);
+                mvwprintw(main_w, y, x, "%c", ch);
+                attroff(A_BOLD);
                 //save char into ascii matrix
                 matrix[y-1][x-1] = ch;
                 //add char into undo queue
