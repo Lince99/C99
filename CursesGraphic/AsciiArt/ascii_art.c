@@ -21,6 +21,9 @@
 #include "include/curses_manager.h"
 #include "include/ascii_matrix.h"
 
+unsigned short int TERM_HAS_COLORS = 0;
+unsigned short int TAB_COUNT = 4;
+
 
 
 int main(int argc, char *argv[]) {
@@ -40,10 +43,13 @@ int main(int argc, char *argv[]) {
 
     //initialize Ncurses
     initscr();
+    //initialize color pairs
+    TERM_HAS_COLORS = init_colors();
+
     //get current terminal window max coordinates
     getmaxyx(stdscr, nlines, ncols);
     //Minimum terminal size requirement
-    if(ncols <= 32 || nlines <= 9) {
+    if(ncols <= 36 || nlines <= 10) {
         mvwprintw(stdscr, 0, 0, "TOO SMALL!");
         endwin();
         return 2;
@@ -52,7 +58,6 @@ int main(int argc, char *argv[]) {
     draw_borders(stdscr);
     curs_set(0);
     noecho();
-    raw();
     keypad(stdscr, 1);
     nodelay(stdscr, 0);
     mvwprintw(stdscr, 1, 1, " Use arrows to move the cursor");
@@ -62,19 +67,21 @@ int main(int argc, char *argv[]) {
     mvwprintw(stdscr, 5, 1, " Use CTRL+Y for redo");
     mvwprintw(stdscr, 6, 1, " Use CTRL+C to Clear the screen");
     mvwprintw(stdscr, 7, 1, " Use CTRL+Q to Quit");
+    if(TERM_HAS_COLORS)
+        mvwprintw(stdscr, 8, 1, "\tUse CTRL+1..8 to use colors");
     attron(A_BOLD);
-    mvwprintw(stdscr, 8, 1, "Press any button to continue");
+    mvwprintw(stdscr, 9, 1, "Press any button to continue");
     attroff(A_BOLD);
     getch();
     wclear(stdscr);
-    curs_set(1);
     //create the main window
     main_w = newwin(nlines, ncols, y, x);
     raw();
+    nonl();
     keypad(main_w, 1);
-    noecho();
     nodelay(main_w, 0); //1 for more responsive but cpu intensive
-    intrflush(main_w, 0); //1 to inherit from tty driver
+    intrflush(main_w, 0); //1 to inherit from tty drive
+    curs_set(1);
     draw_borders(main_w);
     //start cursor position
     y = 1; //(int)nlines/2;
@@ -86,7 +93,10 @@ int main(int argc, char *argv[]) {
     matrix = init_matrix(mat_y, mat_x);
     //error on malloc
     if(matrix == NULL) {
-        mvwprintw(stdscr, 0, 0, "Error on matrix allocation! Exiting...");
+        wattr_on(main_w, COLOR_PAIR(1), NULL);
+        mvwprintw(stdscr, 0, 0, "Error on matrix allocation! Exiting");
+        wattr_off(main_w, COLOR_PAIR(1), NULL);
+        wgetch(main_w);
         endwin();
         return 1;
     }
@@ -106,9 +116,13 @@ int main(int argc, char *argv[]) {
             wclear(main_w);
             draw_borders(main_w);
             //ask the user if he/she's sure to quit
-            mvwprintw(main_w, 1, 1, "Are you sure to quit? [Y/n]");
+            wattr_on(main_w, A_BOLD, NULL);
+            wattr_on(main_w, COLOR_PAIR(1), NULL);
+            mvwprintw(main_w, 1, 1, "Are you sure you want to quit? [Y/n]");
+            wattr_off(main_w, COLOR_PAIR(1), NULL);
+            wattr_off(main_w, A_BOLD, NULL);
             ch = wgetch(main_w);
-            if(ch == 'Y' || ch == 'y') {
+            if(ch == 'Y' || ch == 'y' || ch == KEY_ENTER) {
                 //free Ncurses window
                 delwin(main_w);
                 //free undo and redo queue
@@ -124,17 +138,22 @@ int main(int argc, char *argv[]) {
         //resize the window UNCOMMENT THIS IF KEY_RESIZE doesn't work
         //getmaxyx(stdscr, nlines, ncols);
         switch(ch) {
+            //return to start coordinates
+            case KEY_HOME:
+                x = 1;
+                y = 1;
+                break;
             //Up Arrow
             case KEY_UP:
                 if(y-1 >= 1)
                     y--;
                 break;
-            //Down Arrow
+            //Down Arrow or enter
             case KEY_DOWN:
                 if(y+1 < nlines-1)
                     y++;
                 break;
-            //Left Arrow
+            //Left Arrow or backspace
             case KEY_LEFT:
                 if(x-1 >= 1)
                     x--;
@@ -144,6 +163,14 @@ int main(int argc, char *argv[]) {
                 if(x+1 < ncols-1)
                     x++;
                 break;
+            //tab will do the same as KEY_RIGHT, but for TAB_COUNT times
+            case KEY_STAB:
+                for(int tab_c = 0; tab_c < TAB_COUNT-1; tab_c++) {
+                    if(x+1 < ncols-1)
+                        x++;
+                    else
+                        break;
+                }
             //window resize management
             case KEY_RESIZE:
                 getmaxyx(main_w, nlines, ncols);
@@ -155,12 +182,14 @@ int main(int argc, char *argv[]) {
                 draw_borders(main_w);
                 //update ascii matrix size (only bigger, not smaller)
                 if(nlines-1 > mat_y)
-                    matrix = resize_matrix(matrix, &mat_y, &mat_x, nlines-1, mat_x);
+                    matrix = resize_matrix(matrix, &mat_y, &mat_x,
+                                                   nlines-1, mat_x);
                 if(ncols-1 > mat_x)
-                    matrix = resize_matrix(matrix, &mat_y, &mat_x, mat_y, ncols-1);
+                    matrix = resize_matrix(matrix, &mat_y, &mat_x,
+                                                   mat_y, ncols-1);
                 break;
             //undo
-            case CTRL('z'):
+            case (CTRL('z') || KEY_BACKSPACE):
                 //clear last input
                 mvwprintw(main_w, y, x, " ");
                 //remove from matrix
@@ -210,18 +239,20 @@ int main(int argc, char *argv[]) {
                 draw_borders(main_w);
                 //free undo and redo queue
                 mvwprintw(main_w, 1, 1, "Also clear undo queue? [Y/n]");
+                wrefresh(main_w);
                 ch = wgetch(main_w);
-                if(ch == 'Y' || ch == 'y') {
+                if((ch == 'Y' || ch == 'y' || KEY_ENTER) && queue != NULL) {
                     freeQ_char(queue);
                     move_queue = NULL;
-                    //remove matrix content
-                    free(matrix);
-                    matrix = NULL;
-                    //and re-init ascii art matrix
-                    mat_y = nlines-1;
-                    mat_x = ncols-1;
-                    matrix = init_matrix(mat_y, mat_x);
                 }
+                //remove matrix content
+                free(matrix);
+                matrix = NULL;
+                //and re-init ascii art matrix
+                mat_y = nlines-1;
+                mat_x = ncols-1;
+                matrix = init_matrix(mat_y, mat_x);
+                //update the screen
                 wclear(main_w);
                 draw_borders(main_w);
                 break;
@@ -256,12 +287,13 @@ int main(int argc, char *argv[]) {
                 free(usr_str);
                 mvwprintw(main_w, 1, 1, "Ascii art saved!");
                 break;*/
+            //manage colors
             //here ascii art is printed
             default:
                 if(!isAlphaNum(ch))
                     break;
                 attron(A_BOLD);
-                mvwprintw(main_w, y, x, "%c", ch);
+                //mvwprintw(main_w, y, x, "%c", ch);
                 attroff(A_BOLD);
                 //save char into ascii matrix
                 matrix[y-1][x-1] = ch;

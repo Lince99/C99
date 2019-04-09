@@ -22,4 +22,4 @@ clean_screen:
 	@reset && clear
 
 run:
-	./$(EXC)
+	@./$(EXC)
