@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
             wattr_off(main_w, COLOR_PAIR(1), NULL);
             wattr_off(main_w, A_BOLD, NULL);
             ch = wgetch(main_w);
-            if(ch == 'Y' || ch == 'y' || ch == KEY_ENTER) {
+            if(ch == 'Y' || ch == 'y') {
                 //free Ncurses window
                 delwin(main_w);
                 //free undo and redo queue
@@ -165,12 +165,15 @@ int main(int argc, char *argv[]) {
                 break;
             //tab will do the same as KEY_RIGHT, but for TAB_COUNT times
             case KEY_STAB:
+                mvwprintw(main_w, 1, 1, "TAB PRESSED!");
+                wgetch(main_w);
                 for(int tab_c = 0; tab_c < TAB_COUNT-1; tab_c++) {
                     if(x+1 < ncols-1)
                         x++;
                     else
                         break;
                 }
+                break;
             //window resize management
             case KEY_RESIZE:
                 getmaxyx(main_w, nlines, ncols);
@@ -189,7 +192,7 @@ int main(int argc, char *argv[]) {
                                                    mat_y, ncols-1);
                 break;
             //undo
-            case (CTRL('z') || KEY_BACKSPACE):
+            case CTRL('z'):
                 //clear last input
                 mvwprintw(main_w, y, x, " ");
                 //remove from matrix
@@ -241,14 +244,16 @@ int main(int argc, char *argv[]) {
                 mvwprintw(main_w, 1, 1, "Also clear undo queue? [Y/n]");
                 wrefresh(main_w);
                 ch = wgetch(main_w);
-                if((ch == 'Y' || ch == 'y' || KEY_ENTER) && queue != NULL) {
+                if((ch == 'Y' || ch == 'y') && queue != NULL) {
                     freeQ_char(queue);
                     move_queue = NULL;
+                    queue_dim = 0;
                 }
                 //remove matrix content
                 free(matrix);
                 matrix = NULL;
                 //and re-init ascii art matrix
+                getmaxyx(main_w, nlines, ncols);
                 mat_y = nlines-1;
                 mat_x = ncols-1;
                 matrix = init_matrix(mat_y, mat_x);
@@ -257,37 +262,44 @@ int main(int argc, char *argv[]) {
                 draw_borders(main_w);
                 break;
             //TODO READ STRING, LOAD MATRIX FROM FILE
+            /*
             //load option
-            /*case CTRL('L'):
-                nodelay(main_w, 0);
+            case CTRL('L'):
                 wclear(main_w);
                 draw_borders(main_w);
                 //request file name from user
                 mvwprintw(main_w, 1, 1, "Load filename:\n");
-                curs_set(1);
-                echo();
-                wgetstr(main_w, usr_str);
-                noecho();
-                curs_set(0);
-                free(usr_str);
-                mvwprintw(main_w, 1, 1, "Ascii art loaded!");
-                break;*/
+                usr_str = get_input_str(main_w);
+                free(matrix);
+                matrix = file_to_matrix(usr_str, &mat_y, &mat_x);
+                if(matrix != NULL)
+                    mvwprintw(main_w, 1, 1, "Ascii art \"%s\" load!", usr_str);
+                else {
+                    mat_y = nlines-1;
+                    mat_x = ncols-1;
+                    matrix = init_matrix(mat_y, mat_x);
+                }
+                wgetch(main_w);
+                break;
             //save option
-            /*case CTRL('S'):
+            case CTRL('S'):
                 nodelay(main_w, 0);
                 wclear(main_w);
                 draw_borders(main_w);
                 //request file name from user
                 mvwprintw(main_w, 1, 1, "Save filename:\n");
-                curs_set(1);
-                echo();
-                wgetstr(main_w, usr_str);
-                noecho();
-                curs_set(0);
-                free(usr_str);
-                mvwprintw(main_w, 1, 1, "Ascii art saved!");
-                break;*/
-            //manage colors
+                usr_str = get_input_str(main_w);
+                free(matrix);
+                if(matrix_to_file(matrix, mat_y, mat_x, usr_str))
+                    mvwprintw(main_w, 1, 1, "Ascii art saved!");
+                else {
+                    wattr_on(main_w, COLOR_PAIR(1), NULL);
+                    mvwprintw(stdscr, 0, 0, "Error on Ascii art save!");
+                    wattr_off(main_w, COLOR_PAIR(1), NULL);
+                }
+                wgetch(main_w);
+                break;
+            */
             //here ascii art is printed
             default:
                 if(!isAlphaNum(ch))
@@ -295,6 +307,8 @@ int main(int argc, char *argv[]) {
                 attron(A_BOLD);
                 //mvwprintw(main_w, y, x, "%c", ch);
                 attroff(A_BOLD);
+                if(matrix == NULL)
+                    matrix = init_matrix(mat_y, mat_x);
                 //save char into ascii matrix
                 matrix[y-1][x-1] = ch;
                 //add char into undo queue

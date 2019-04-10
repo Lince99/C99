@@ -18,6 +18,7 @@
 #define CURSES_MANAGER_H
 
 #include <curses.h>
+#include <string.h>
 
 //manage Ctrl+other buttons
 #ifndef CTRL
@@ -25,8 +26,11 @@
 #endif
 
 //signatures
-void draw_borders(WINDOW*);
 int init_colors();
+void draw_borders(WINDOW*);
+char* get_input_str(WINDOW*);
+
+
 
 /*
  * initialize color pairs, return 1 on success
@@ -61,12 +65,8 @@ void draw_borders(WINDOW* screen) {
     if(!has_colors()) {
         mvwprintw(screen, (int)y/2, (int)x/2, "NO COLOR SUPPORT!");
     }
-    else {
-        //https://www.linuxjournal.com/content/programming-color-ncurses
-        start_color();
-        init_pair(1, COLOR_RED, COLOR_BLACK);
+    else
         attron(COLOR_PAIR(1));
-    }
     //http://melvilletheatre.com/articles/ncurses-extended-characters/index.html
     //corners
     mvwaddch(screen, 0, 0, ACS_ULCORNER);
@@ -85,6 +85,30 @@ void draw_borders(WINDOW* screen) {
     }
     attroff(COLOR_PAIR(1));
 
+}
+
+/*
+ * get user input from "screen" window, and return the string
+ */
+char* get_input_str(WINDOW* screen) {
+    char* str = NULL;
+
+    curs_set(1);
+    noraw();
+    nl();
+    keypad(screen, 0);
+    nodelay(screen, 0);
+    echo();
+
+    //TODO FIX HERE
+    wgetstr(screen, str);
+
+    noecho();
+    raw();
+    nonl();
+    keypad(screen, 1);
+
+    return str;
 }
 
 #endif //CURSES_MANAGER_H

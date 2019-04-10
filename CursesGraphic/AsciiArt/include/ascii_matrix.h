@@ -30,6 +30,7 @@ void print_matrix(WINDOW*, int**, int, int);
 void print_matrix_stdout(int**, int, int);
 void free_matrix(int**, int, int);
 int matrix_to_file(int**, int, int, char*);
+int** file_to_matrix(char*, int*, int*);
 
 
 
@@ -95,7 +96,6 @@ int** init_matrix(int y, int x) {
 
     return mat;
 }
-
 
 /*
  * resize matrix only if new size is bigger than original,
@@ -183,8 +183,9 @@ void print_matrix_stdout(int** matrix, int mat_y, int mat_x) {
 
 }
 
+//-----------------------------------TODO-------------------------------------//
 /*
- * save matrix to filename, return 0 on success, 1 on NULL found, 2 I/O error
+ * save matrix to filename, return 1 on success, 0 on NULL found, -1 I/O error
  */
 int matrix_to_file(int** matrix, int mat_y, int mat_x, char* filename) {
     FILE* fp = NULL;
@@ -210,15 +211,14 @@ int matrix_to_file(int** matrix, int mat_y, int mat_x, char* filename) {
     return 0;
 }
 
-//-----------------------------------TODO-------------------------------------//
 /*
  * return a pointer to the matrix, and mat_y, mat_x via reference
  */
-/*int** file_to_matrix(char* filename, int* mat_y, int* mat_x) {
+int** file_to_matrix(char* filename, int* mat_y, int* mat_x) {
     FILE* fp = NULL;
     int** matrix = NULL;
     int ch = 0;
-    int y, x;
+    //int y, x;
 
     if(filename == NULL) {
         *mat_y = -1;
@@ -234,14 +234,14 @@ int matrix_to_file(int** matrix, int mat_y, int mat_x, char* filename) {
     //read file content
     while((ch = fgetc(fp)) != EOF) {
         if(ch == '\n')
-            *mat_y++;
+            (*mat_y)++;
         else
-            *mat_x++;
+            (*mat_x)++;
     }
 
     fclose(fp);
 
     return matrix;
-}*/
+}
 
 #endif //ASCII_MATRIX_H
