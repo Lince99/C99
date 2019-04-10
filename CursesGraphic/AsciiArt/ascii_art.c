@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
     int y = 0;
     //user input var
     int ch = 0;
+    int usr_req = 0;
     //char* usr_str = NULL;
     int** matrix = NULL;
     int mat_y = 0;
@@ -121,8 +122,8 @@ int main(int argc, char *argv[]) {
             mvwprintw(main_w, 1, 1, "Are you sure you want to quit? [Y/n]");
             wattr_off(main_w, COLOR_PAIR(1), NULL);
             wattr_off(main_w, A_BOLD, NULL);
-            ch = wgetch(main_w);
-            if(ch == 'Y' || ch == 'y') {
+            usr_req = wgetch(main_w);
+            if(usr_req == 'Y' || usr_req == 'y') {
                 //free Ncurses window
                 delwin(main_w);
                 //free undo and redo queue
@@ -243,11 +244,14 @@ int main(int argc, char *argv[]) {
                 //free undo and redo queue
                 mvwprintw(main_w, 1, 1, "Also clear undo queue? [Y/n]");
                 wrefresh(main_w);
-                ch = wgetch(main_w);
-                if((ch == 'Y' || ch == 'y') && queue != NULL) {
+                usr_req = wgetch(main_w);
+                if((usr_req == 'Y' || usr_req == 'y') && queue != NULL) {
                     freeQ_char(queue);
                     move_queue = NULL;
                     queue_dim = 0;
+                    mvwprintw(main_w, 2, 1, "Undo queue clear");
+                    wrefresh(main_w);
+                    wgetch(main_w);
                 }
                 //remove matrix content
                 free(matrix);
@@ -257,6 +261,9 @@ int main(int argc, char *argv[]) {
                 mat_y = nlines-1;
                 mat_x = ncols-1;
                 matrix = init_matrix(mat_y, mat_x);
+                mvwprintw(main_w, 3, 1, "New matrix created");
+                wrefresh(main_w);
+                wgetch(main_w);
                 //update the screen
                 wclear(main_w);
                 draw_borders(main_w);
@@ -305,21 +312,40 @@ int main(int argc, char *argv[]) {
                 if(!isAlphaNum(ch))
                     break;
                 attron(A_BOLD);
-                //mvwprintw(main_w, y, x, "%c", ch);
+                draw_borders(main_w);
+                mvwprintw(main_w, mat_y, mat_x-7, "[%d] %c", (int)ch, ch);
+                wrefresh(main_w);
                 attroff(A_BOLD);
-                if(matrix == NULL)
-                    matrix = init_matrix(mat_y, mat_x);
+                /*if(matrix == NULL)
+                    matrix = init_matrix(mat_y, mat_x);*/
                 //save char into ascii matrix
                 matrix[y-1][x-1] = ch;
                 //add char into undo queue
                 queue = pushQ_char(queue, ch, y, x);
+                mvwprintw(main_w, (int)mat_y/2, (int)mat_x/2, "After-push");
+                wrefresh(main_w);
+                sleep(1);
                 //start undo and redo
+                if(move_queue == NULL)
+                    mvwprintw(main_w, (int)mat_y/2, (int)mat_x/2, "MOVE_QUEUE NULL!");
+                else
+                    mvwprintw(main_w, (int)mat_y/2, (int)mat_x/2, "move_queue not null!");
+                if(queue == NULL)
+                    mvwprintw(main_w, (int)(mat_y/2)-1, (int)mat_x/2, "QUEUE NULL!");
+                else
+                    mvwprintw(main_w, (int)mat_y/2, (int)mat_x/2, "queue not null!");
+                wrefresh(main_w);
+                sleep(1);
                 move_queue = getLastQ_char(queue);
+                mvwprintw(main_w, (int)mat_y/2, (int)mat_x/2, "After get last");
+                wrefresh(main_w);
+                sleep(1);
                 //respect defined memory limit
                 if(queue_dim >= QUEUE_LIMIT)
                     queue = popHeadQ_char(queue);
                 else
                     queue_dim++;
+                mvwprintw(main_w, mat_y, 1, "[%d]", queue_dim);
                 break;
         }
         print_matrix(main_w, matrix, mat_y, mat_x);

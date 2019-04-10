@@ -105,16 +105,16 @@ q_char* popQ_char(q_char* head) {
 /*
  * remove last node of the queue
  */
-q_char* popHeadQ_char(q_char* q) {
+q_char* popHeadQ_char(q_char* head) {
 
-    if(q == NULL)
+    if(head == NULL)
         return NULL;
-    if(q->next == NULL)
+    if(head->next == NULL)
         return NULL;
-    q = q->next;
-    q->prev = NULL;
+    head = head->next;
+    head->prev = NULL;
 
-    return q;
+    return head;
 }
 
 /*
@@ -122,6 +122,7 @@ q_char* popHeadQ_char(q_char* q) {
  */
 q_char* getLastQ_char(q_char* head) {
 
+    //TODO FIX BUG HERE
     if(head == NULL)
         return NULL;
     while(head->next != NULL)
@@ -133,17 +134,17 @@ q_char* getLastQ_char(q_char* head) {
 /*
  * free the queue from start
  */
-void freeQ_char(q_char* q) {
+void freeQ_char(q_char* head) {
     q_char* tmp = NULL;
 
-    if(q == NULL)
+    if(head == NULL)
         return;
-    while(q->prev != NULL) {
-        q = q->prev;
+    while(head->prev != NULL) {
+        head = head->prev;
     }
-    while(q->next != NULL) {
-        tmp = q;
-        q = q->next;
+    while(head->next != NULL) {
+        tmp = head;
+        head = head->next;
         free(tmp);
     }
 
