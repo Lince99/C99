@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 #ifndef QUEUE_LIMIT
-    #define QUEUE_LIMIT 10000
+    #define QUEUE_LIMIT 1000000
 #endif
 
 int queue_dim = 0;
@@ -35,6 +35,8 @@ q_char* pushQ_char(q_char*, int, int, int);
 q_char* popQ_char(q_char*);
 q_char* popHeadQ_char(q_char*);
 q_char* getLastQ_char(q_char*);
+int queue_to_file(q_char*, char*);
+q_char* file_to_queue(char* filename);
 void freeQ_char(q_char*);
 
 
@@ -132,6 +134,40 @@ q_char* getLastQ_char(q_char* head) {
 }
 
 /*
+ * write into "filename" the queue, return 0 on success, 1 on nil error, 2 on IO
+ */
+int queue_to_file(q_char* q, char* filename) {
+    FILE* fp = NULL;
+    
+    if(q == NULL || filename == NULL)
+        return 1;
+    fp = fopen(filename, "a+");
+    if(fp == NULL)
+        return 2;
+    while(q->prev != NULL)
+        q = q->prev;
+    while(q->next != NULL) {
+        fprintf(fp, "'%c' %d %d\n", q->value, q->y, q->x);
+        q = q->next;
+    }
+    fprintf(fp, "\n");
+    fclose(fp);
+    
+    return 0;
+}
+
+/*
+ * load queue from a *_q.txt file
+ */
+q_char* file_to_queue(char* filename) {
+    q_char* q = NULL;
+    
+    //TODO ADD CODE FILE_TO_QUEUE
+    
+    return q;
+}
+
+/*
  * free the queue from start
  */
 void freeQ_char(q_char* head) {
@@ -139,9 +175,8 @@ void freeQ_char(q_char* head) {
 
     if(head == NULL)
         return;
-    while(head->prev != NULL) {
+    while(head->prev != NULL)
         head = head->prev;
-    }
     while(head->next != NULL) {
         tmp = head;
         head = head->next;

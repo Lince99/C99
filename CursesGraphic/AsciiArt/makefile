@@ -1,6 +1,14 @@
 #Copyright (c) 2019 Lince99 under MIT license
 
-CC=gcc -Wall
+CC=gcc -Wall -Os
+CC+= -faggressive-loop-optimizations -fcombine-stack-adjustments
+CC+= -fexpensive-optimizations -falign-functions -falign-jumps
+CC+= -falign-labels -falign-loops -floop-nest-optimize
+CC+= -foptimize-strlen -ftree-loop-optimize
+
+CC+= -fipa-icf -fipa-icf-functions -fipa-icf-variables -fipa-reference
+CC+= -fipa-pta -foptimize-sibling-calls -freorder-blocks
+CC+= -freorder-functions
 
 # name of the source (include folders if the source isn't in the current dir)
 SRC=ascii_art.c

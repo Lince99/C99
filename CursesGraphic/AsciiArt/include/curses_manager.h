@@ -30,6 +30,9 @@ int init_colors();
 void draw_borders(WINDOW*);
 char* get_input_str(WINDOW*);
 
+//globals
+unsigned int MAX_STRING_LEN = 64;
+
 
 
 /*
@@ -101,7 +104,8 @@ char* get_input_str(WINDOW* screen) {
     echo();
 
     //TODO FIX HERE
-    wgetstr(screen, str);
+    if(wgetnstr(screen, str, MAX_STRING_LEN) == ERR)
+        return NULL;
 
     noecho();
     raw();

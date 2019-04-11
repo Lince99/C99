@@ -28,7 +28,7 @@ int** init_matrix(int, int);
 int** resize_matrix(int**, int*, int*, int, int);
 void print_matrix(WINDOW*, int**, int, int);
 void print_matrix_stdout(int**, int, int);
-void free_matrix(int**, int, int);
+void free_matrix(int**, int);
 int matrix_to_file(int**, int, int, char*);
 int** file_to_matrix(char*, int*, int*);
 
@@ -64,12 +64,12 @@ int is_void_matrix(int** matrix, int mat_y, int mat_x) {
 
     for(; mat_y > 0; mat_y--) {
         for (; mat_x > 0; mat_x--) {
-            if(matrix[mat_y][mat_x] != 0)
-                return 1;
+            if(matrix[mat_y][mat_x] != 0 || matrix[mat_y][mat_x] != ' ')
+                return 0;
         }
     }
 
-    return 0;
+    return 1;
 }
 
 /*
@@ -183,9 +183,22 @@ void print_matrix_stdout(int** matrix, int mat_y, int mat_x) {
 
 }
 
+/*
+ * free matrix memory, and return 1 on success, 0 on error
+ */
+void free_matrix(int** matrix, int mat_y) {
+
+    if(matrix == NULL || mat_y <= 0)
+        return;
+    for(; mat_y > 0; mat_y--)
+        free(matrix[mat_y-1]);
+    free(matrix);
+
+}
+
 //-----------------------------------TODO-------------------------------------//
 /*
- * save matrix to filename, return 1 on success, 0 on NULL found, -1 I/O error
+ * save matrix to filename, return 0 on success, 1 on NULL found, 2 I/O error
  */
 int matrix_to_file(int** matrix, int mat_y, int mat_x, char* filename) {
     FILE* fp = NULL;
