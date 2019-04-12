@@ -1,4 +1,4 @@
-/* Copyright (C) 2019  Lince99
+/* Copyright (C) 2019 Lince99
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -102,12 +102,14 @@ int main(int argc, char *argv[]) {
 
         //resize the window UNCOMMENT THIS IF KEY_RESIZE doesn't work
         //getmaxyx(stdscr, nlines, ncols);
-        
+
         switch(ch) {
             //detect quit command
             case CTRL('q'):
                 wclear(main_w);
+                wattr_on(main_w, COLOR_PAIR(1), NULL);
                 draw_borders(main_w);
+                wattr_off(main_w, COLOR_PAIR(1), NULL);
                 //ask the user if he/she's sure to quit
                 print_info(main_w, "Confirm exit? [Y/n]", 1, 1, 3, TRUE);
                 if(!is_void_matrix(matrix, mat_y, mat_x))
@@ -271,10 +273,12 @@ int main(int argc, char *argv[]) {
                 }
                 break;
 
-            //reset option //TODO reload while loop part of program
+            //reset option
             case CTRL('R'):
                 wclear(main_w);
+                wattr_on(main_w, COLOR_PAIR(3), NULL);
                 draw_borders(main_w);
+                wattr_off(main_w, COLOR_PAIR(3), NULL);
                 //free undo and redo queue
                 if(queue != NULL) {
                     print_info(main_w, "Reset undo queue? [Y/n] ", 
@@ -307,7 +311,7 @@ int main(int argc, char *argv[]) {
                 matrix = init_matrix(mat_y, mat_x);
                 if(matrix != NULL) {
                     print_info(main_w, "New matrix created", 
-                                       3, 1, 2, FALSE);
+                               3, 1, 2, FALSE);
                     wrefresh(main_w);
                     wgetch(main_w);
                 }
@@ -418,7 +422,7 @@ void welcome_message(WINDOW* win) {
     noecho();
     keypad(win, 1);
     nodelay(win, 0);
-    mvwprintw(win, 1, 1, " Use arrows to move");
+    mvwprintw(win, 1, 1, " Use arrows or Tab to move");
     mvwprintw(win, 2, 1, "_Use CTRL+S to Save");
     mvwprintw(win, 3, 1, "_Use CTRL+L to Load file");
     mvwprintw(win, 4, 1, " Use CTRL+Z to undo");
