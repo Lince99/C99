@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     matrix = init_matrix(mat_y, mat_x);
     //error on malloc
     if(matrix == NULL) {
-        print_info(main_w, "Error on matrix alloc!", 0, 0, 1, TRUE);
+        print_info(main_w, "Error on canvas alloc!", 0, 0, 1, TRUE);
         endwin();
         return 1;
     }
@@ -345,7 +345,7 @@ int main(int argc, char *argv[]) {
                 wgetch(main_w);
                 break;
             */
-            //TODO FIX HERE
+            /*TODO FIX HERE
             //save option
             case CTRL('S'):
                 wclear(main_w);
@@ -377,6 +377,7 @@ int main(int argc, char *argv[]) {
                 wgetch(main_w);
                 wclear(main_w);
                 break;
+            */
 
             //here ascii art is printed
             default:
