@@ -77,6 +77,7 @@ q_char* pushQ_char(q_char* head, int val, int y, int x) {
     q_char* q = head;
 
     node = initQ_char(val, y, x);
+    //check alloc status
     if(node == NULL)
         return NULL;
     if(q == NULL)
@@ -129,6 +130,7 @@ q_char* getLastQ_char(q_char* head) {
         return NULL;
     while(head->next != NULL)
         head = head->next;
+    head = head->next;
 
     return head;
 }
