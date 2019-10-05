@@ -1,0 +1,8 @@
+<language name="example" extensions=".example">
+	<!-- comments must follow these style -->
+
+    <code require="1">
+			<count> "4" </count>
+	</code>
+
+</language>
